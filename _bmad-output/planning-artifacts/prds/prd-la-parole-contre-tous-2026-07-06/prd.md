@@ -2,7 +2,7 @@
 title: "La Parole Avant Tout — Chat Anonyme"
 status: final
 created: 2026-07-06
-updated: 2026-07-06
+updated: 2026-07-08
 ---
 
 # PRD : La Parole Avant Tout — Chat Anonyme
@@ -41,10 +41,10 @@ Réussir, ce n'est pas seulement "le chat fonctionne techniquement" — c'est qu
 - **UJ-1. Amara écrit son premier message sur ce qu'elle subit.**
   - **Persona + contexte :** Amara, en classe de troisième, est mise à l'écart par un groupe de camarades depuis plusieurs semaines. Elle a peur que parler à un adulte "fasse toute une histoire".
   - **État d'entrée :** aucune authentification, elle arrive sur la page "Discussion Anonyme" du site depuis son téléphone, en dehors des heures de cours.
-  - **Parcours :** elle ouvre la page de chat → lit un texte court expliquant l'anonymat et ses limites (Signal de danger = numéros d'urgence affichés, FR-10) avant que le champ de saisie ne s'active (FR-14) → écrit son message → l'envoie.
+  - **Parcours :** elle ouvre la page de chat → lit un texte court expliquant l'anonymat et ses limites (Signal de danger = numéros d'urgence affichés, FR-10) avant que le champ de saisie ne s'active (FR-14) → choisit "Sauvegarder ma conversation" et crée un Code personnalisé (FR-16, FR-17) → écrit son message → l'envoie.
   - **Climax :** un accusé de réception automatique s'affiche immédiatement ("Bien reçu. On te répond dès qu'on peut, on est aussi au lycée toute la journée."), lui confirmant que le message est parti sans qu'elle ait à se demander si "ça a marché".
-  - **Résolution :** Amara ferme l'onglet, rassurée d'avoir été entendue sans s'être exposée. Rien ne lui est demandé (pas de compte).
-  - **Cas limite :** si elle revient depuis un autre appareil ou après avoir vidé son cache, elle ne retrouve pas sa conversation — c'est une limite connue et documentée (§5), pas un bug.
+  - **Résolution :** Amara ferme l'onglet, rassurée d'avoir été entendue sans s'être exposée. Rien ne lui est demandé (pas de compte) — juste le Code qu'elle a choisi elle-même.
+  - **Cas limite :** si elle revient depuis un autre appareil ou après avoir vidé son cache, elle retrouve sa conversation en saisissant son Code (FR-18) ; si elle avait choisi le mode éphémère, en revanche, aucun retour n'est possible — c'est un choix qu'elle a fait, pas un bug.
 
 - **UJ-2. Basile répond entre deux cours.**
   - **Persona + contexte :** Basile, le binôme de Charles, en pause de dix minutes, reçoit une notification de nouveau message.
@@ -55,8 +55,8 @@ Réussir, ce n'est pas seulement "le chat fonctionne techniquement" — c'est qu
 
 - **UJ-3. Amara revient voir si on lui a répondu.**
   - **Persona + contexte :** Le soir même, depuis le même téléphone, Amara rouvre le site.
-  - **État d'entrée :** aucune authentification ; le site reconnaît sa session via le navigateur.
-  - **Parcours :** elle rouvre la page "Discussion Anonyme" → sa conversation précédente s'affiche automatiquement, avec la réponse de l'organisateur → elle peut répondre à son tour.
+  - **État d'entrée :** aucune authentification ; le site reconnaît sa session via le navigateur (ou, si elle change d'appareil, elle saisit le Code qu'elle a créé, FR-18).
+  - **Parcours :** elle rouvre la page "Discussion Anonyme" → sa conversation précédente s'affiche automatiquement (cookie) ou après saisie de son Code → elle voit la réponse de l'organisateur → elle peut répondre à son tour.
   - **Climax :** elle voit qu'une vraie personne a lu et répondu à ce qu'elle a écrit — c'est le moment où la confiance se confirme.
   - **Résolution :** un fil de conversation continu s'installe, sans qu'elle ait jamais eu à créer de compte.
 
@@ -74,8 +74,9 @@ Réussir, ce n'est pas seulement "le chat fonctionne techniquement" — c'est qu
 
 - **Élève** — utilisateur anonyme du chat, sans compte ni identité révélée. Peut être en position de victime de harcèlement/exclusion, ou en recherche de conseil sur comment réagir face à un camarade exclu.
 - **Organisateur** — Charles ou son binôme, les deux seules personnes authentifiées pouvant consulter et répondre aux conversations.
-- **Session anonyme** — mécanisme technique (cookie/navigateur) permettant à un Élève de retrouver sa Conversation sans compte ni code à retenir. Liée à un navigateur/appareil, pas à une identité.
-- **Conversation** — fil d'échange entre un Élève (via sa Session anonyme) et les Organisateurs, contenant un ou plusieurs messages dans les deux sens.
+- **Session anonyme** — mécanisme technique (cookie/navigateur) permettant à un Élève de retrouver sa Conversation automatiquement depuis le même appareil, sans rien saisir. Liée à un navigateur/appareil, pas à une identité. Absente en mode éphémère.
+- **Code de récupération** — identifiant alphanumérique choisi par l'Élève (pas généré par le système) permettant de retrouver sa Conversation depuis n'importe quel appareil. Optionnel : n'existe que si l'Élève a choisi de sauvegarder sa conversation (FR-16, FR-17). Absent en mode éphémère.
+- **Conversation** — fil d'échange entre un Élève (via sa Session anonyme et/ou son Code de récupération) et les Organisateurs, contenant un ou plusieurs messages dans les deux sens.
 - **Accusé de réception automatique** — message affiché immédiatement après l'envoi d'un message par l'Élève, assisté par IA, confirmant la bonne réception et fixant une attente honnête de délai de réponse.
 - **Signal de danger** — contenu d'un message évoquant un risque sérieux pour l'Élève (ex. idées suicidaires). Déclenche l'affichage des Numéros d'urgence et un signalement visuel côté Organisateurs.
 - **Numéros d'urgence** — liste de contacts d'urgence pertinents au Royaume-Uni (ex. Samaritans, Childline, urgences) **et** la ligne directe de la CPE/counsellor du lycée, affichés systématiquement dès détection d'un Signal de danger. Appeler la CPE/counsellor depuis cette liste reste toujours à l'initiative de l'Élève ; les Organisateurs ne transmettent jamais son identité à sa place.
@@ -87,7 +88,7 @@ Réussir, ce n'est pas seulement "le chat fonctionne techniquement" — c'est qu
 
 ### 4.1 Chat anonyme — envoi et continuité de conversation
 
-**Description :** Un Élève arrive sur la page "Discussion Anonyme" du site, écrit un message sans créer de compte, et l'envoie. Réalise UJ-1. Une Session anonyme est établie via le navigateur pour que l'Élève retrouve automatiquement sa Conversation à sa prochaine visite depuis le même appareil, sans code à retenir. Réalise UJ-3. `[ASSUMPTION]` la Session anonyme est un cookie de longue durée (ex. 12 mois) plutôt qu'une session de navigateur classique qui expirerait à la fermeture — pour que l'Élève retrouve sa conversation plusieurs jours ou semaines après, pas seulement dans la même visite ; à confirmer.
+**Description :** Un Élève arrive sur la page "Discussion Anonyme" du site, écrit un message sans créer de compte, et l'envoie. Réalise UJ-1. Avant le premier message, l'Élève voit la divulgation de confidentialité (FR-14) puis choisit un mode de conversation (FR-16) : soit il crée un Code personnalisé pour pouvoir retrouver sa Conversation plus tard, y compris depuis un autre appareil (FR-17, FR-18), en plus de la Session anonyme automatique par cookie (FR-2) ; soit il choisit un mode éphémère où rien n'est sauvegardé nulle part (FR-19). Réalise UJ-3.
 
 **Exigences fonctionnelles :**
 
@@ -102,23 +103,59 @@ Un Élève peut écrire et envoyer un message via l'interface du chat sans crée
 
 #### FR-2 : Continuité de conversation par session navigateur
 
-Un Élève revenant depuis le même navigateur/appareil retrouve automatiquement sa Conversation précédente, y compris les réponses des Organisateurs. Réalise UJ-3.
+Un Élève revenant depuis le même navigateur/appareil retrouve automatiquement sa Conversation précédente, y compris les réponses des Organisateurs. Réalise UJ-3. Ne s'applique pas si l'Élève a choisi le mode éphémère (FR-19).
 
 **Conséquences (testables) :**
 - La Conversation s'affiche sans action de l'Élève au-delà d'ouvrir la page.
-- Si le cookie est absent (autre appareil, cache vidé, navigation privée), une nouvelle Conversation vierge est créée — aucune erreur ni blocage.
+- Si le cookie est absent (autre appareil, cache vidé, navigation privée) et qu'aucun Code de récupération n'a été créé, une nouvelle Conversation vierge est créée — aucune erreur ni blocage.
 
 **Hors périmètre :**
-- Récupération de la Conversation depuis un autre appareil ou après suppression du cookie (voir §5, Non-Goals).
+- Récupération de la Conversation sans cookie et sans Code de récupération (voir §5, Non-Goals).
 
 #### FR-14 : Divulgation de la limite de confidentialité avant le premier message
 
 Un Élève voit le texte expliquant la règle d'anonymat et sa limite ("anonyme, sauf en cas de danger sérieux où des ressources d'urgence s'affichent") avant de pouvoir écrire son premier message de la session. Réalise UJ-1.
 
 **Conséquences (testables) :**
-- Le champ de saisie du premier message d'une session n'est pas actif/utilisable tant que ce texte n'a pas été affiché à l'écran.
+- Le champ de saisie du premier message d'une session n'est pas actif/utilisable tant que ce texte n'a pas été affiché à l'écran, ni tant que le choix de mode (FR-16) n'a pas été fait.
 - Ce texte est visible en premier écran, jamais relégué à un lien "en savoir plus" non consulté par défaut.
 - Cette exigence garantit l'ordre chronologique : l'information arrive avant l'écriture, jamais seulement au moment où un Signal de danger se déclenche.
+
+#### FR-16 : Choix du mode de conversation avant le premier message
+
+Un Élève qui n'a pas déjà une Conversation en cours (pas de cookie valide, pas de Code saisi) choisit, juste après la divulgation de confidentialité (FR-14) et avant que le champ de saisie ne s'active, entre deux modes : "Sauvegarder ma conversation" (crée un Code, FR-17) ou "Chat éphémère" (rien n'est sauvegardé, FR-19).
+
+**Conséquences (testables) :**
+- Ce choix est présenté comme une étape simple à deux options, sans jargon technique (ex. "Je veux pouvoir revenir lire la réponse" vs "Je ne reviendrai pas, je ne veux rien laisser").
+- Le champ de saisie du premier message ne s'active qu'après ce choix.
+- Un Élève revenant via cookie (FR-2) ou via Code (FR-18) ne revoit pas cet écran — il retrouve directement sa Conversation existante.
+
+#### FR-17 : Création d'un Code personnalisé de récupération
+
+Un Élève qui choisit "Sauvegarder ma conversation" (FR-16) crée lui-même un Code (pas généré par le système) qui lui permettra de retrouver sa Conversation plus tard, y compris depuis un autre appareil ou après suppression du cookie.
+
+**Conséquences (testables) :**
+- Si le Code choisi est déjà utilisé par une autre Conversation active, le système refuse et affiche un message d'erreur clair invitant l'Élève à en choisir un autre — aucune Conversation n'est créée tant que le Code n'est pas unique.
+- Le Code est un identifiant alphanumérique `[ASSUMPTION]` entre 6 et 20 caractères — bornes provisoires à valider en architecture/UX, l'objectif étant d'éviter les codes trop courts (faciles à deviner) sans complexifier inutilement la saisie.
+- L'Élève est averti, au moment de créer son Code, que quiconque connaît ce Code peut lire sa Conversation — donc de ne pas choisir un Code facile à deviner (prénom, date de naissance) ni de le partager.
+
+#### FR-18 : Récupération d'une conversation via Code
+
+Un Élève peut saisir un Code précédemment créé (FR-17) pour retrouver sa Conversation, y compris depuis un appareil différent de celui utilisé pour l'envoi initial.
+
+**Conséquences (testables) :**
+- La saisie d'un Code valide affiche la Conversation correspondante, avec l'historique complet et les réponses des Organisateurs.
+- La saisie d'un Code invalide affiche un message d'erreur générique, sans indiquer si le Code existe ou non pour un autre Élève (pour ne pas faciliter le repérage de Codes existants).
+- Le nombre de tentatives de saisie de Code est limité dans le temps (ex. verrouillage temporaire après plusieurs échecs) `[ASSUMPTION]` pour empêcher qu'un tiers devine un Code par essais successifs — mécanisme exact à définir en architecture.
+
+#### FR-19 : Mode chat éphémère (sans Code, sans sauvegarde)
+
+Un Élève qui choisit "Chat éphémère" (FR-16) envoie son message normalement — il est transmis aux Organisateurs et reste soumis à la détection de Signal de danger (FR-9, FR-10) comme n'importe quel message — mais aucun Code n'est créé et la Session anonyme par cookie (FR-2) n'est pas activée : l'Élève ne pourra pas revenir lire une réponse.
+
+**Conséquences (testables) :**
+- Le message envoyé en mode éphémère est visible par les Organisateurs (FR-5) et déclenche FR-9/FR-10 exactement comme un message en mode sauvegardé.
+- Aucun cookie de continuité n'est posé et aucun Code n'est demandé à l'Élève dans ce mode.
+- L'Élève est informé, au moment de choisir ce mode, qu'il ne pourra pas revenir lire une éventuelle réponse — pour que ce soit un choix éclairé, pas une surprise.
 
 ### 4.2 Accusé de réception automatique
 
@@ -256,7 +293,8 @@ Le site présente, dans une section dédiée distincte du chat, des repères sur
 ## 5. Non-Goals explicites
 
 - Le produit ne construit pas de compte utilisateur ni d'identité persistante pour les Élèves — l'anonymat est la fonctionnalité, pas un mode dégradé.
-- Le produit ne permet pas de récupérer une Conversation anonyme depuis un autre appareil ou après suppression du cookie — c'est un compromis assumé pour rester simple, pas un oubli.
+- Le produit ne permet pas de récupérer une Conversation anonyme sans Code de récupération — un Élève qui choisit le mode éphémère (FR-19), ou qui a créé un Code puis l'a perdu, ne peut pas retrouver sa Conversation. C'est un compromis assumé pour rester simple, pas un oubli.
+- Le produit ne propose pas de récupération de Code oublié (ex. par email) — un Code perdu est définitivement perdu, cohérent avec l'absence de toute identité collectée.
 - Le produit ne donne aucun accès direct au système pour la CPE, la counsellor, ou tout autre adulte du lycée (voir §2.2, Non-Utilisateurs) — le filet humain reste téléphonique et hors-système.
 - Le produit n'implémente pas de détection de danger basée sur un modèle d'IA de compréhension du langage — la v1 reste volontairement simple (mots-clés), constructible par une équipe débutante.
 - Le produit ne dépend pas d'une adoption officielle du lycée pour être construit ou lancé — l'objectif immédiat est de présenter un outil qui fonctionne déjà.
@@ -269,7 +307,7 @@ Aucune deadline externe ne contraint ce périmètre : le lancement a lieu quand 
 
 ### 6.1 Dans le périmètre
 
-- Chat anonyme fonctionnel (envoi, continuité par cookie, divulgation de la limite de confidentialité, accusé de réception) — §4.1, §4.2.
+- Chat anonyme fonctionnel (envoi, choix sauvegarde-par-code vs éphémère, continuité par cookie et/ou Code, divulgation de la limite de confidentialité, accusé de réception) — §4.1, §4.2.
 - Interface organisateurs (authentification, consultation, réponse) — §4.3.
 - Notification rapide aux organisateurs, avec relance automatique en cas de non-lecture d'un message prioritaire, canal à déterminer en architecture — §4.4, §4.5 (FR-15).
 - Détection automatique de Signal de danger + bandeau permanent de numéros d'urgence (incluant la ligne CPE/counsellor) — §4.5.
@@ -281,7 +319,7 @@ Aucune deadline externe ne contraint ce périmètre : le lancement a lieu quand 
 - Canal exact de notification (WhatsApp/email/autre) — différé à l'architecture.
 - Accès direct de la CPE/counsellor au système — reste un contact téléphonique hors-système.
 - Détection de danger par IA/ML — v1 reste à base de mots-clés, plus simple à maintenir.
-- Récupération de conversation multi-appareils — cookie uniquement en v1.
+- Récupération de Code oublié (ex. par email) — un Code perdu est définitivement perdu.
 - Podcasts et articles — brief séparé à venir.
 - Adoption officielle par le lycée — non bloquante pour construire et lancer.
 
@@ -328,12 +366,15 @@ Ces points ne bloquent pas la construction du produit, mais bloquent expliciteme
 - §4.5 (FR-9) — la liste de mots-clés doit être révisable sans intervention technique lourde.
 - §4.5 (FR-15) — le mécanisme technique exact de la relance (canal répété vs canal de secours) reste une décision d'architecture.
 - §4.6 (FR-11) — la procédure d'escalade est un document externe au produit logiciel, pas une fonctionnalité du chat.
+- §4.1 (FR-17) — bornes provisoires du Code personnalisé (6 à 20 caractères alphanumériques), à valider en architecture/UX.
+- §4.1 (FR-18) — le mécanisme exact de limitation des tentatives de saisie de Code (anti-brute-force) reste une décision d'architecture.
 
 ## 10. Contraintes et garde-fous
 
 ### Sécurité et confidentialité (pièce centrale du produit)
 
 - **Accès restreint** : seuls les deux Organisateurs authentifiés peuvent lire les Conversations — aucun tiers, y compris la CPE/counsellor, n'a d'accès direct (FR-4).
+- **Le Code de récupération est un secret, pas un identifiant** : quiconque le connaît accède à la Conversation (FR-18). L'Élève en est averti à la création (FR-17), et la limitation des tentatives de saisie (FR-18) réduit le risque qu'un tiers le devine par essais successifs — un Code choisi par l'Élève étant par nature moins imprévisible qu'un code généré aléatoirement.
 - **Anonymat total, y compris en cas de danger** : contrairement à des services comme Crisis Text Line ou Childline UK qui peuvent, en dernier recours, tracer un appelant, ce produit ne lève jamais l'anonymat de son propre chef (voir mécanisme complet en §4.5/§4.6) — l'Élève en est informé avant d'écrire (FR-14).
 - **Filet à deux étages** : automatique (FR-8, FR-10, FR-15) et humain (FR-11), jamais l'un sans l'autre.
 - **Responsabilité assumée** : les Organisateurs portent explicitement la responsabilité de premier niveau des échanges, en connaissance de cause (choix documenté dans le brief).
