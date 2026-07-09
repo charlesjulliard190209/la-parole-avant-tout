@@ -4,7 +4,7 @@ baseline_commit: 2f897adddfa57623abd38ab546d275b49fc3ac20
 
 # Story 1.3: Envoi du premier message et accusé de réception
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -60,6 +60,16 @@ so that je sais que mon message est bien parti sans attendre une réponse humain
   - [x] Test de sécurité : en mode "Sauvegarder", modifier manuellement `conv` dans l'URL pour pointer vers une autre Conversation "Sauvegarder" existante (ou un id inexistant) → l'envoi doit être refusé avec une erreur générique, aucun message inséré
   - [x] Vérifier qu'aucun texte de message ni contenu sensible n'apparaît dans les logs serveur (uniquement métadonnées si besoin)
   - [x] Vérifier sur mobile et desktop que le formulaire et l'accusé restent lisibles et utilisables — confirmé par Charles le 2026-07-09 sur `http://localhost:3000/discussion-anonyme`
+
+### Review Findings
+
+- [x] [Review][Patch] Avertir l'élève que le lien de sa conversation éphémère ne doit pas être partagé [app/discussion-anonyme/page.tsx] — **Décision de Charles (2026-07-09)** sur le finding "Message éphémère injectable indéfiniment si le lien `conv` fuite" : pas de mitigation technique (jeton/expiration), ajouter uniquement un avertissement textuel sur l'écran "Chat éphémère" (type "ne partage jamais ce lien, ne le mets pas en favori"). Corrigé : deuxième phrase d'avertissement ajoutée.
+- [x] [Review][Patch] `envoyerMessage` ne logue jamais aucun échec côté serveur [app/discussion-anonyme/actions.ts:134-135,158-159] — contrairement à `choisirModeEphemere` qui logue sa propre erreur de création, un échec d'insertion du message ou une conversation introuvable (tentative de manipulation de `conv`) ne laisse aucune trace exploitable côté serveur. Corrigé : `console.error` ajouté sur les deux branches (id de conversation + erreur technique, jamais le corps du message).
+- [x] [Review][Patch] Texte d'erreur trompeur dans `envoyerMessage` [app/discussion-anonyme/actions.ts:26-27] — `ERREUR_GENERIQUE_ENVOI` dit "Réessaie depuis le début de la conversation" alors que l'utilisateur reste sur le même formulaire/la même conversation ; cette formulation peut inquiéter inutilement dans un contexte de divulgation sensible. Corrigé : reformulé en "Réessaie dans quelques instants."
+- [x] [Review][Patch] `page.tsx` ne normalise pas les `searchParams` qui peuvent arriver en tableau [app/discussion-anonyme/page.tsx:16,19] — une clé de requête dupliquée (`?etape=pret&etape=x`) fait échouer silencieusement la comparaison `=== "pret"` sans aucune explication affichée. Corrigé : `etape`/`conv`/`erreur` normalisés (premier élément si tableau) avant comparaison.
+- [x] [Review][Patch] Aucune annonce lecteur d'écran au succès de l'envoi [app/discussion-anonyme/message-form.tsx:60-63] — le paragraphe de l'accusé n'a pas d'`aria-live`, donc un utilisateur de lecteur d'écran n'a aucun signal explicite que l'envoi a réussi. Corrigé : `role="status"`/`aria-live="polite"` ajoutés.
+- [x] [Review][Patch] Appels Supabase non protégés dans `envoyerMessage` [app/discussion-anonyme/actions.ts:128-136,152-160] — contrairement à `isCodeAvailable` (protégé par try/catch), le `select`/`insert` de cette fonction ne le sont pas ; un rejet réseau imprévu ferait apparaître la page d'erreur brute de Next.js au lieu du message générique prévu. Corrigé : corps de la fonction enveloppé dans un try/catch retournant l'erreur générique.
+- [x] [Review][Defer] Code de récupération mis en minuscules sans avertissement à l'utilisateur [app/discussion-anonyme/actions.ts:44, app/discussion-anonyme/mode-choice.tsx] — deferred, pre-existing (code Story 1.2, non touché par ce diff)
 
 ## Dev Notes
 
@@ -132,9 +142,9 @@ Claude Sonnet 5 (claude-sonnet-5)
 ### File List
 
 - `lib/accuse-reception.ts` (déjà présent, revu — aucune modification)
-- `app/discussion-anonyme/actions.ts` (déjà présent, revu — aucune modification ; contient déjà `envoyerMessage` et la capture de l'`id` dans les deux redirections)
-- `app/discussion-anonyme/message-form.tsx` (déjà présent, revu — aucune modification)
-- `app/discussion-anonyme/page.tsx` (déjà présent, revu — aucune modification)
+- `app/discussion-anonyme/actions.ts` (déjà présent ; modifié pendant le code review — logs d'erreur ajoutés, texte d'erreur reformulé, try/catch ajouté dans `envoyerMessage`)
+- `app/discussion-anonyme/message-form.tsx` (déjà présent ; modifié pendant le code review — `role="status"`/`aria-live="polite"` sur l'accusé)
+- `app/discussion-anonyme/page.tsx` (déjà présent ; modifié pendant le code review — normalisation des `searchParams`, avertissement sur le partage du lien éphémère)
 
 ## Change Log
 

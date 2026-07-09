@@ -24,7 +24,7 @@ export type EnvoyerMessageState = {
 
 const MESSAGE_MAX_LENGTH = 4000;
 const ERREUR_GENERIQUE_ENVOI =
-  "Impossible d'envoyer ce message. Réessaie depuis le début de la conversation.";
+  "Impossible d'envoyer ce message. Réessaie dans quelques instants.";
 
 const CODE_REGEX = /^[a-zA-Z0-9]{6,20}$/;
 
@@ -125,39 +125,58 @@ export async function envoyerMessage(
     };
   }
 
-  const { data: conversation, error: conversationError } = await supabaseServer
-    .from("conversations")
-    .select("id, is_ephemeral, session_token_hash")
-    .eq("id", conversationId)
-    .maybeSingle();
+  try {
+    const { data: conversation, error: conversationError } = await supabaseServer
+      .from("conversations")
+      .select("id, is_ephemeral, session_token_hash")
+      .eq("id", conversationId)
+      .maybeSingle();
 
-  if (conversationError || !conversation) {
-    return { error: ERREUR_GENERIQUE_ENVOI, accuse: null };
-  }
-
-  if (!conversation.is_ephemeral) {
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-
-    const autorise =
-      !!sessionToken &&
-      !!conversation.session_token_hash &&
-      (await verifySecret(sessionToken, conversation.session_token_hash));
-
-    if (!autorise) {
+    if (conversationError || !conversation) {
+      console.error(
+        "Échec de récupération de la conversation pour l'envoi :",
+        conversationId,
+        conversationError
+      );
       return { error: ERREUR_GENERIQUE_ENVOI, accuse: null };
     }
-  }
 
-  const { error: insertError } = await supabaseServer.from("messages").insert({
-    conversation_id: conversationId,
-    sender_type: "eleve",
-    body: message,
-  });
+    if (!conversation.is_ephemeral) {
+      const cookieStore = await cookies();
+      const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
-  if (insertError) {
+      const autorise =
+        !!sessionToken &&
+        !!conversation.session_token_hash &&
+        (await verifySecret(sessionToken, conversation.session_token_hash));
+
+      if (!autorise) {
+        return { error: ERREUR_GENERIQUE_ENVOI, accuse: null };
+      }
+    }
+
+    const { error: insertError } = await supabaseServer.from("messages").insert({
+      conversation_id: conversationId,
+      sender_type: "eleve",
+      body: message,
+    });
+
+    if (insertError) {
+      console.error(
+        "Échec de l'insertion du message :",
+        conversationId,
+        insertError
+      );
+      return { error: ERREUR_GENERIQUE_ENVOI, accuse: null };
+    }
+
+    return { error: null, accuse: getAccuseReceptionAleatoire() };
+  } catch (error) {
+    console.error(
+      "Erreur inattendue lors de l'envoi du message :",
+      conversationId,
+      error
+    );
     return { error: ERREUR_GENERIQUE_ENVOI, accuse: null };
   }
-
-  return { error: null, accuse: getAccuseReceptionAleatoire() };
 }

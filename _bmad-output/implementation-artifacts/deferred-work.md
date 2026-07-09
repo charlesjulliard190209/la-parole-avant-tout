@@ -12,3 +12,8 @@
 - Le paramètre `mode=ephemere` est posé sur la redirection de `choisirModeEphemere` mais jamais lu dans `page.tsx` — soit à exploiter (message spécifique au mode éphémère sur l'écran "prêt"), soit à supprimer.
 - Visiter `?conv=<id>` sans `?etape=pret` retombe silencieusement sur l'écran de choix de mode plutôt que de gérer explicitement cet état partiel — non bloquant, aucune AC ne le couvre.
 - Aucune limitation de débit sur `choisirModeSauvegarder`, qui déclenche une boucle `bcrypt.compare` en O(n) à chaque soumission. Le O(n) lui-même est un compromis d'architecture assumé (Dev Notes/NFR-1), mais l'absence de limitation de débit reste un vecteur d'épuisement CPU distinct — à traiter dans un futur passage de durcissement.
+
+## Deferred from: code review of 1-3-envoi-du-premier-message-et-accuse-de-reception (2026-07-09)
+
+- Le Code de récupération est mis en minuscules dans `choisirModeSauvegarder` (`app/discussion-anonyme/actions.ts:44`) sans que `mode-choice.tsx` n'avertisse l'élève que son Code est insensible à la casse. Code/copie de la Story 1.2, non touchés par le diff de la Story 1.3 — repéré seulement maintenant.
+- (Pour mémoire, pas une nouvelle entrée) La race TOCTOU sur l'unicité du Code, le scan O(n) `bcrypt.compare` et l'absence de limitation de débit ont été re-signalés par cette revue mais sont déjà couverts par les entrées ci-dessus (revue de la Story 1.2, 2026-07-08) — décision de Charles déjà actée, rien de nouveau à trancher.

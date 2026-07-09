@@ -54,6 +54,51 @@ export async function isCodeAvailable(code: string): Promise<boolean> {
 }
 
 /**
+ * Retrouve la Conversation "Sauvegarder" correspondant à un session_token de
+ * cookie (retour via navigateur, FR-2). Même motif O(n) que isCodeAvailable
+ * (bcrypt sale chaque hachage, impossible de comparer par requête SQL) —
+ * acceptable à l'échelle d'un lycée (NFR-1).
+ *
+ * Contrairement à isCodeAvailable, ne lance jamais d'exception : appelée à
+ * chaque chargement de la page de chat, un incident Supabase transitoire ne
+ * doit jamais empêcher l'affichage du parcours normal (NFR-2).
+ */
+export async function findConversationBySessionToken(
+  sessionToken: string
+): Promise<{ id: string } | null> {
+  try {
+    const { data, error } = await supabaseServer
+      .from("conversations")
+      .select("id, session_token_hash")
+      .eq("is_ephemeral", false)
+      .not("session_token_hash", "is", null);
+
+    if (error) {
+      return null;
+    }
+
+    for (const row of data ?? []) {
+      try {
+        if (
+          row.session_token_hash &&
+          (await verifySecret(sessionToken, row.session_token_hash))
+        ) {
+          return { id: row.id };
+        }
+      } catch {
+        // Une ligne corrompue (hash malformé) ne doit pas empêcher de
+        // trouver la bonne correspondance plus loin dans la liste.
+        continue;
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Pose le cookie de session (httpOnly, ~12 mois). Uniquement pour le mode
  * "Sauvegarder" — le mode éphémère ne pose jamais ce cookie (AD-5, FR-19).
  */

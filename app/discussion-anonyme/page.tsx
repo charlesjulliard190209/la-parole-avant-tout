@@ -1,7 +1,15 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { choisirModeEphemere } from "./actions";
+import { ConversationThread, type Message } from "./conversation-thread";
 import { MessageForm } from "./message-form";
 import { ModeChoiceSauvegarder } from "./mode-choice";
+import {
+  SESSION_COOKIE_NAME,
+  findConversationBySessionToken,
+  verifySecret,
+} from "@/lib/session";
+import { supabaseServer } from "@/lib/supabase-server";
 
 export const metadata = {
   title: "Discussion anonyme — La Parole Avant Tout",
@@ -13,15 +21,95 @@ export default async function DiscussionAnonymePage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const params = await searchParams;
-  const etapePrete = params.etape === "pret";
-  const erreurEphemere = params.erreur === "ephemere";
+  const etapeParam = Array.isArray(params.etape) ? params.etape[0] : params.etape;
+  const convParam = Array.isArray(params.conv) ? params.conv[0] : params.conv;
+  const erreurParam = Array.isArray(params.erreur) ? params.erreur[0] : params.erreur;
+
+  const etapePrete = etapeParam === "pret";
+  const erreurEphemere = erreurParam === "ephemere";
   const conversationId =
-    typeof params.conv === "string" && params.conv.length > 0
-      ? params.conv
-      : null;
+    typeof convParam === "string" && convParam.length > 0 ? convParam : null;
 
   if (etapePrete && !conversationId) {
     redirect("/discussion-anonyme");
+  }
+
+  // Atterrissage "à froid" (ni etape=pret ni conv dans l'URL) : cherche une
+  // Conversation "Sauvegarder" retrouvée par cookie avant d'afficher la
+  // divulgation/choix de mode (FR-2). Aucune correspondance ou pas de cookie
+  // → parcours normal, sans erreur (AC #2, #3).
+  if (!etapePrete && !conversationId && !erreurEphemere) {
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+
+    if (sessionToken) {
+      const conversationTrouvee =
+        await findConversationBySessionToken(sessionToken);
+
+      if (conversationTrouvee) {
+        redirect(`/discussion-anonyme?etape=pret&conv=${conversationTrouvee.id}`);
+      }
+    }
+  }
+
+  let messages: Message[] = [];
+
+  if (etapePrete && conversationId) {
+    // Comme findConversationBySessionToken (Task 1), un incident Supabase
+    // transitoire ici ne doit jamais faire planter la page (NFR-2) — traité
+    // comme un conv introuvable, même garde-fou que la ligne absente.
+    let conversation: {
+      id: string;
+      is_ephemeral: boolean;
+      session_token_hash: string | null;
+    } | null = null;
+
+    try {
+      const { data, error } = await supabaseServer
+        .from("conversations")
+        .select("id, is_ephemeral, session_token_hash")
+        .eq("id", conversationId)
+        .maybeSingle();
+
+      conversation = error ? null : data;
+    } catch {
+      conversation = null;
+    }
+
+    if (!conversation) {
+      redirect("/discussion-anonyme");
+    }
+
+    // Une Conversation "Sauvegarder" ne s'affiche que pour le cookie qui lui
+    // correspond — sinon un conv deviné/copié dans l'URL exposerait les
+    // messages d'un autre élève (AC #5). Le mode Éphémère n'a par
+    // construction aucun cookie à vérifier (AD-5, AC #6).
+    if (!conversation.is_ephemeral) {
+      const cookieStore = await cookies();
+      const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+
+      const autorise =
+        !!sessionToken &&
+        !!conversation.session_token_hash &&
+        (await verifySecret(sessionToken, conversation.session_token_hash));
+
+      if (!autorise) {
+        redirect("/discussion-anonyme");
+      }
+    }
+
+    try {
+      const { data, error } = await supabaseServer
+        .from("messages")
+        .select("id, sender_type, body, created_at")
+        .eq("conversation_id", conversationId)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true });
+
+      messages = error ? [] : (data ?? []);
+    } catch {
+      messages = [];
+    }
   }
 
   return (
@@ -46,7 +134,8 @@ export default async function DiscussionAnonymePage({
         </div>
 
         {etapePrete && conversationId ? (
-          <div className="mt-6">
+          <div className="mt-6 space-y-4">
+            <ConversationThread messages={messages} />
             <MessageForm conversationId={conversationId} />
           </div>
         ) : (
@@ -77,6 +166,11 @@ export default async function DiscussionAnonymePage({
               <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
                 Attention : tu ne pourras pas revenir plus tard lire une
                 réponse.
+              </p>
+              <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+                Ne partage jamais le lien de cette page une fois ta
+                conversation commencée, et ne le mets pas dans tes favoris :
+                n&apos;importe qui l&apos;ayant pourrait écrire à ta place.
               </p>
               <button
                 type="submit"

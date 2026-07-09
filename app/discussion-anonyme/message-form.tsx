@@ -58,7 +58,11 @@ export function MessageForm({ conversationId }: { conversationId: string }) {
       </form>
 
       {state.accuse && (
-        <p className="rounded-xl border border-zinc-200 p-4 text-sm text-zinc-700 dark:border-zinc-700 dark:text-zinc-300">
+        <p
+          role="status"
+          aria-live="polite"
+          className="rounded-xl border border-zinc-200 p-4 text-sm text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
+        >
           {state.accuse}
         </p>
       )}
