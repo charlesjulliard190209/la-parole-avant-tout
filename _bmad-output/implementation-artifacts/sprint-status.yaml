@@ -41,7 +41,7 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 2026-07-08
-last_updated: 2026-07-08
+last_updated: 2026-07-09
 project: la-parole-contre-tous
 project_key: NOKEY
 tracking_system: file-system
@@ -51,7 +51,7 @@ development_status:
   epic-1: in-progress
   1-1-mise-en-place-du-projet-et-divulgation-de-confidentialite: done
   1-2-choix-du-mode-de-conversation-sauvegarder-ou-ephemere: done
-  1-3-envoi-du-premier-message-et-accuse-de-reception: in-progress
+  1-3-envoi-du-premier-message-et-accuse-de-reception: review
   1-4-retour-automatique-via-le-navigateur: backlog
   1-5-recuperation-dune-conversation-via-code: backlog
   epic-1-retrospective: optional
