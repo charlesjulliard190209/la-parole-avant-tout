@@ -17,3 +17,11 @@
 
 - Le Code de récupération est mis en minuscules dans `choisirModeSauvegarder` (`app/discussion-anonyme/actions.ts:44`) sans que `mode-choice.tsx` n'avertisse l'élève que son Code est insensible à la casse. Code/copie de la Story 1.2, non touchés par le diff de la Story 1.3 — repéré seulement maintenant.
 - (Pour mémoire, pas une nouvelle entrée) La race TOCTOU sur l'unicité du Code, le scan O(n) `bcrypt.compare` et l'absence de limitation de débit ont été re-signalés par cette revue mais sont déjà couverts par les entrées ci-dessus (revue de la Story 1.2, 2026-07-08) — décision de Charles déjà actée, rien de nouveau à trancher.
+
+## Deferred from: code review of 1-5-recuperation-dune-conversation-via-code (2026-07-09)
+
+- `recovery-form.tsx` duplique intégralement le balisage des formulaires `mode-choice.tsx`/`message-form.tsx` (wrapper, label/input, message d'erreur, bouton) sans composant partagé — cohérent avec la préférence déjà documentée de ce dépôt pour la duplication à cette échelle (NFR-1) plutôt qu'une abstraction prématurée, comme déjà tranché pour la triplication du scan bcrypt dans `lib/session.ts` (Story 1.4/1.5). Aucune action pour l'instant.
+- Verrou anti-brute-force (`recovery_attempts`) contournable par requêtes concurrentes (TOCTOU) : `isRecoveryLocked` et `recordRecoveryAttempt` ne sont pas atomiques. **Décision de Charles (2026-07-09)** : risque accepté, même position que la race TOCTOU sur l'unicité du Code (Story 1.2) — aucune action pour l'instant.
+- Le verrouillage anti-brute-force échoue "ouvert" (fail-open) sur toute erreur Supabase transitoire, désactivant temporairement la protection. **Décision de Charles (2026-07-09)** : conservé tel quel, cohérent avec le reste du code (NFR-2) — aucune action pour l'instant.
+- Le verrou anti-brute-force est partagé par IP brute : des élèves derrière la même IP (Wi-Fi/NAT du lycée) partagent le même compteur de tentatives. **Décision de Charles (2026-07-09)** : risque accepté, situation jugée rare — aucune action pour l'instant.
+- Récupérer une conversation via Code sur un nouvel appareil invalide silencieusement le cookie de tout autre appareil déjà connecté à cette conversation, sans message d'erreur affiché sur cet autre appareil. **Décision de Charles (2026-07-09)** : laissé silencieux, cas jugé rare — aucune action pour l'instant.

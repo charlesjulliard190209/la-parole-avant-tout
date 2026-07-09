@@ -1,13 +1,17 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { supabaseServer } from "@/lib/supabase-server";
 import {
   SESSION_COOKIE_NAME,
-  generateSessionToken,
+  findConversationByRecoveryCode,
   hashSecret,
   isCodeAvailable,
+  isRecoveryLocked,
+  issueSessionToken,
+  recordRecoveryAttempt,
   setSessionCookie,
   verifySecret,
 } from "@/lib/session";
@@ -22,9 +26,17 @@ export type EnvoyerMessageState = {
   accuse: string | null;
 };
 
+export type RecupererCodeState = {
+  error: string | null;
+};
+
 const MESSAGE_MAX_LENGTH = 4000;
 const ERREUR_GENERIQUE_ENVOI =
   "Impossible d'envoyer ce message. Réessaie dans quelques instants.";
+const ERREUR_GENERIQUE_RECUPERATION =
+  "Code invalide. Vérifie ta saisie et réessaie.";
+const ERREUR_VERROUILLAGE_RECUPERATION =
+  "Trop de tentatives depuis cet appareil. Réessaie dans 15 minutes.";
 
 const CODE_REGEX = /^[a-zA-Z0-9]{6,20}$/;
 
@@ -60,11 +72,8 @@ export async function choisirModeSauvegarder(
     };
   }
 
-  const sessionToken = generateSessionToken();
-  const [sessionTokenHash, recoveryCodeHash] = await Promise.all([
-    hashSecret(sessionToken),
-    hashSecret(code),
-  ]);
+  const [{ sessionToken, sessionTokenHash }, recoveryCodeHash] =
+    await Promise.all([issueSessionToken(), hashSecret(code)]);
 
   const { data, error } = await supabaseServer
     .from("conversations")
@@ -179,4 +188,60 @@ export async function envoyerMessage(
     );
     return { error: ERREUR_GENERIQUE_ENVOI, accuse: null };
   }
+}
+
+// Récupération d'une conversation "Sauvegarder" via Code depuis un nouvel
+// appareil (FR-18). Vérifie elle-même le format, le verrouillage
+// anti-brute-force (AD-9) et l'existence d'une Conversation correspondante,
+// avant de réémettre un session_token et de poser le cookie (AD-3, AD-5).
+export async function recupererConversationParCode(
+  _prevState: RecupererCodeState,
+  formData: FormData
+): Promise<RecupererCodeState> {
+  const code = (formData.get("code")?.toString().trim() ?? "").toLowerCase();
+
+  if (!CODE_REGEX.test(code)) {
+    return { error: ERREUR_GENERIQUE_RECUPERATION };
+  }
+
+  const headersList = await headers();
+  const ip =
+    headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+
+  const locked = await isRecoveryLocked(ip);
+  if (locked) {
+    return { error: ERREUR_VERROUILLAGE_RECUPERATION };
+  }
+
+  const conversation = await findConversationByRecoveryCode(code);
+
+  // Journalisée après la réponse (after()) : le résultat n'est jamais lu par
+  // l'appelant et ses erreurs sont déjà avalées en interne (voir docstring
+  // de recordRecoveryAttempt) — inutile de faire attendre l'élève dessus.
+  after(() => recordRecoveryAttempt(ip, code, conversation !== null));
+
+  if (!conversation) {
+    return { error: ERREUR_GENERIQUE_RECUPERATION };
+  }
+
+  const { sessionToken: nouveauSessionToken, sessionTokenHash: nouveauSessionTokenHash } =
+    await issueSessionToken();
+
+  const { error: updateError } = await supabaseServer
+    .from("conversations")
+    .update({ session_token_hash: nouveauSessionTokenHash })
+    .eq("id", conversation.id);
+
+  if (updateError) {
+    console.error(
+      "Échec de la réémission du session_token à la récupération :",
+      conversation.id,
+      updateError
+    );
+    return { error: ERREUR_GENERIQUE_RECUPERATION };
+  }
+
+  await setSessionCookie(nouveauSessionToken);
+
+  redirect(`/discussion-anonyme?etape=pret&conv=${conversation.id}`);
 }

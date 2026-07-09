@@ -4,6 +4,7 @@ import { choisirModeEphemere } from "./actions";
 import { ConversationThread, type Message } from "./conversation-thread";
 import { MessageForm } from "./message-form";
 import { ModeChoiceSauvegarder } from "./mode-choice";
+import { RecoveryForm } from "./recovery-form";
 import {
   SESSION_COOKIE_NAME,
   findConversationBySessionToken,
@@ -125,12 +126,6 @@ export default async function DiscussionAnonymePage({
             permette de te reconnaître. Une vraie personne du lycée va lire ce
             que tu écris et te répondre — pas un robot.
           </p>
-          <p>
-            Une seule limite : si ce que tu écris fait penser à un danger
-            sérieux pour toi, des numéros d&apos;aide s&apos;affichent tout de
-            suite, automatiquement — même avant qu&apos;on ait pu lire ton
-            message.
-          </p>
         </div>
 
         {etapePrete && conversationId ? (
@@ -152,6 +147,8 @@ export default async function DiscussionAnonymePage({
             )}
 
             <ModeChoiceSauvegarder />
+
+            <RecoveryForm />
 
             <form
               action={choisirModeEphemere}
