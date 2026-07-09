@@ -4,7 +4,7 @@ baseline_commit: 42acb563beebd792a6ae9e93fc1e800d1ceed908
 
 # Story 1.1: Mise en place du projet et divulgation de confidentialité
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -47,6 +47,15 @@ so that je comprends les règles du jeu avant de m'exposer.
 - [x] Task 6: Vérification manuelle (AC: #1, #2, #3)
   - [x] Ouvrir la page déployée sur mobile et desktop, confirmer que le texte s'affiche immédiatement sans clic caché — vérifié : `https://la-parole-avant-tout.vercel.app/discussion-anonyme` répond HTTP 200 et contient le texte de divulgation, aucun champ de saisie présent. (Vérification équivalente faite d'abord en local avant déploiement : `npm run build` + `npm run start` + `curl`.)
   - [x] Confirmer en base Supabase que les tables `Conversation`/`Message` existent avec RLS activé et aucune policy — confirmé par Charles via Table Editor (les deux tables apparaissent) ; migration appliquée manuellement via SQL Editor Supabase (la CLI a échoué sur un problème connu d'authentification pooler, voir Debug Log)
+
+### Review Findings
+
+- [x] [Review][Patch] `<html lang="en">` alors que tout le contenu (texte de divulgation, metadata) est en français [app/layout.tsx:27]
+- [x] [Review][Patch] `body { font-family: Arial, ... }` dans globals.css écrase les polices Geist chargées via `next/font/google` (polices récupérées mais jamais réellement appliquées) [app/globals.css:25]
+- [x] [Review][Patch] Ligne parasite/hallucinée dans les Completion Notes, sans rapport avec le scope de la story [1-1-mise-en-place-du-projet-et-divulgation-de-confidentialite.md:106]
+- [x] [Review][Defer] `app/page.tsx` (racine "/") reste le boilerplate par défaut de `create-next-app` (liens sortants Vercel/Next.js) — déjà noté dans le File List comme "pas encore celui d'Epic 4" ; propriété de la Story 4.1 (point d'entrée vers le chat) [app/page.tsx] — deferred, pre-existing
+- [x] [Review][Defer] `messages.body` n'a pas de contrainte anti-vide (`not null` accepte `''`) — la validation du contenu d'un message relève de la Story 1.3 (envoi du premier message) [supabase/migrations/20260708000000_conversations_and_messages.sql:24] — deferred, pre-existing
+- [x] [Review][Defer] Historique de migrations de la CLI Supabase désynchronisé de la base réelle (migration appliquée à la main via SQL Editor suite à l'échec de `supabase db push`) — SQL idempotent donc sans risque immédiat, mais à réconcilier avant la prochaine migration (Story 1.5) [supabase/migrations/20260708000000_conversations_and_messages.sql] — deferred, pre-existing
 
 ## Dev Notes
 
@@ -103,7 +112,6 @@ Claude Sonnet 5 (claude-sonnet-5)
 
 ### Completion Notes List
 
-- Ultimate context engine analysis completed - comprehensive developer guide created
 - Projet Next.js initialisé (App Router, TypeScript 6.0.3 — mis à jour depuis le `^5` par défaut du scaffold pour coller à AD-2), Tailwind CSS 4.3.2, arborescence `app/`/`lib/`/`supabase/migrations/` en place.
 - `lib/supabase-server.ts` créé : lève une erreur explicite si `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` sont absents, plutôt que d'échouer silencieusement.
 - Migration `supabase/migrations/20260708000000_conversations_and_messages.sql` écrite : tables `conversations`/`messages`, RLS activé sans policy (deny-by-default, AD-4). `recovery_attempts` volontairement absente (réservée à la Story 1.5).

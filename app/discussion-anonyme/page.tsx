@@ -1,8 +1,29 @@
+import { redirect } from "next/navigation";
+import { choisirModeEphemere } from "./actions";
+import { MessageForm } from "./message-form";
+import { ModeChoiceSauvegarder } from "./mode-choice";
+
 export const metadata = {
   title: "Discussion anonyme — La Parole Avant Tout",
 };
 
-export default function DiscussionAnonymePage() {
+export default async function DiscussionAnonymePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const etapePrete = params.etape === "pret";
+  const erreurEphemere = params.erreur === "ephemere";
+  const conversationId =
+    typeof params.conv === "string" && params.conv.length > 0
+      ? params.conv
+      : null;
+
+  if (etapePrete && !conversationId) {
+    redirect("/discussion-anonyme");
+  }
+
   return (
     <main className="flex flex-1 flex-col items-center bg-zinc-50 px-4 py-10 dark:bg-black sm:py-16">
       <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-900 sm:p-8">
@@ -22,11 +43,50 @@ export default function DiscussionAnonymePage() {
             suite, automatiquement — même avant qu&apos;on ait pu lire ton
             message.
           </p>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            La suite (choisir comment retrouver ta conversation, puis écrire
-            ton message) arrive juste après.
-          </p>
         </div>
+
+        {etapePrete && conversationId ? (
+          <div className="mt-6">
+            <MessageForm conversationId={conversationId} />
+          </div>
+        ) : (
+          <div className="mt-6 space-y-4">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              Avant de commencer, choisis comment tu veux discuter :
+            </p>
+
+            {erreurEphemere && (
+              <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+                Une erreur est survenue pendant la création de ta
+                conversation. Réessaie.
+              </p>
+            )}
+
+            <ModeChoiceSauvegarder />
+
+            <form
+              action={choisirModeEphemere}
+              className="space-y-3 rounded-xl border border-zinc-200 p-4 dark:border-zinc-700"
+            >
+              <h2 className="font-medium text-zinc-900 dark:text-zinc-50">
+                Chat éphémère
+              </h2>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                Rien n&apos;est sauvegardé : pas de Code, pas de cookie.
+              </p>
+              <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+                Attention : tu ne pourras pas revenir plus tard lire une
+                réponse.
+              </p>
+              <button
+                type="submit"
+                className="w-full rounded-lg border border-zinc-300 px-4 py-2 text-zinc-900 dark:border-zinc-600 dark:text-zinc-50"
+              >
+                Continuer en éphémère
+              </button>
+            </form>
+          </div>
+        )}
       </div>
     </main>
   );
