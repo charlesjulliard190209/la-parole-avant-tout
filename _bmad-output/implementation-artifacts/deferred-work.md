@@ -1,5 +1,10 @@
 # Deferred Work
 
+## Deferred from: code review of 2-3-procedure-descalade-humaine-documentee (2026-07-10)
+
+- Signal de danger concernant un tiers (pas l'Élève lui-même) non couvert par la procédure d'escalade (`docs/procedure-escalade-cpe-counsellor.md`) — FR-9 définit le Signal de danger uniquement autour des idées suicidaires/de l'automutilation de l'Élève lui-même ; un message décrivant un danger venant d'un tiers (ex. maltraitance en cours) est une classe d'escalade différente non couverte. Extension de périmètre à trancher au niveau produit (FR-9), pas dans cette story.
+- Aucune boucle de confirmation/clôture avec la CPE après l'appel d'escalade — orthogonal au cœur des AC de cette story (informer la CPE), question de process plus large non bloquante pour l'usage immédiat de la procédure.
+
 ## Deferred from: code review of 1-1-mise-en-place-du-projet-et-divulgation-de-confidentialite (2026-07-08)
 
 - `app/page.tsx` (racine "/") reste le boilerplate par défaut de `create-next-app` (liens sortants Vercel/Next.js). Déjà noté dans le File List de la story comme "pas encore celui d'Epic 4" ; propriété de la Story 4.1 (point d'entrée vers le chat).
