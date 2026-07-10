@@ -7,7 +7,7 @@ paradigm: 'Monolithe en couches piloté par Server Actions (Next.js App Router)'
 scope: 'Le produit entier : site public (vitrine + section FR-13), chat anonyme élève, interface organisateurs, notification, détection de Signal de danger. Dérivé du PRD final (prd-la-parole-contre-tous-2026-07-06).'
 status: final
 created: '2026-07-08'
-updated: '2026-07-08'
+updated: '2026-07-10'
 binds: ['FR-1','FR-2','FR-3','FR-4','FR-5','FR-6','FR-7','FR-8','FR-9','FR-10','FR-11','FR-12','FR-13','FR-14','FR-15','FR-16','FR-17','FR-18','FR-19']
 sources: ['_bmad-output/planning-artifacts/prds/prd-la-parole-contre-tous-2026-07-06/prd.md', '_bmad-output/planning-artifacts/prds/prd-la-parole-contre-tous-2026-07-06/addendum.md']
 companions: []
@@ -72,7 +72,7 @@ graph LR
 
 - **Binds:** FR-9, FR-10
 - **Prevents:** une liste de mots-clés dupliquée entre le code et une base de données qui divergent, ou l'ajout accidentel d'un modèle d'IA de compréhension du langage (Non-Goal explicite du PRD §5).
-- **Rule:** la détection est un test de correspondance simple contre une liste versionnée dans `lib/danger-keywords.ts`, exécuté côté serveur dans la Server Action d'envoi de message, avant tout accusé de réception (FR-3) et avant l'écriture en base. Modifier la liste = éditer ce fichier + déployer (push GitHub → Vercel redéploie automatiquement). Pas d'interface d'administration séparée tant que Charles et Basile restent les seuls organisateurs ET développeurs (voir Deferred).
+- **Rule:** la détection est un test de correspondance simple contre une liste versionnée dans `lib/danger-keywords.ts`, exécuté côté serveur dans la Server Action d'envoi de message, avant tout accusé de réception (FR-3) et avant l'écriture en base. Modifier la liste = éditer ce fichier + déployer (push GitHub → Vercel redéploie automatiquement). Pas d'interface d'administration séparée tant que Charles et Basile restent les seuls organisateurs ET développeurs (voir Deferred). `[DÉCISION 2026-07-10]` Sur correspondance, aucune information n'est jamais renvoyée à l'Élève au-delà de l'accusé de réception standard (FR-3, identique à un message sans Signal de danger) — l'alerte (FR-10) part uniquement vers les Organisateurs (AD-7). Le rendu de `app/discussion-anonyme/page.tsx` ne doit jamais dépendre du résultat de cette détection ; FR-8 (bandeau permanent visible par l'Élève) est retiré du produit.
 
 ### AD-7 — Notification via un seul bot Telegram
 
@@ -212,9 +212,9 @@ supabase/
 | Consultation Conversations (FR-5) | `app/organisateurs/page.tsx` | AD-4 |
 | Réponse organisateur (FR-6) | `app/organisateurs/actions.ts` | AD-3, AD-4 |
 | Notification (FR-7) | `lib/telegram.ts` | AD-7 |
-| Bandeau permanent urgence (FR-8) | `app/discussion-anonyme/page.tsx` (statique, ne dépend pas de FR-9) | — |
+| ~~Bandeau permanent urgence (FR-8)~~ `[RETIRÉ 2026-07-10]` | — | — |
 | Détection danger (FR-9) | `lib/danger-keywords.ts` | AD-6 |
-| Affichage numéros d'urgence (FR-10) | `app/discussion-anonyme/actions.ts` + `lib/telegram.ts` | AD-6, AD-7 |
+| Alerte silencieuse aux organisateurs (FR-10) `[RÉVISÉ 2026-07-10]` | `app/discussion-anonyme/actions.ts` + `lib/telegram.ts` (jamais affiché côté `page.tsx`) | AD-6, AD-7 |
 | Relance non-lecture (FR-15) | tâche planifiée (Vercel Cron) → `lib/telegram.ts` | AD-7 |
 | Point d'entrée site (FR-12) | `app/page.tsx` | AD-1 |
 | Section deuxième profil (FR-13) | `app/camarade-exclu/page.tsx` | AD-1 |

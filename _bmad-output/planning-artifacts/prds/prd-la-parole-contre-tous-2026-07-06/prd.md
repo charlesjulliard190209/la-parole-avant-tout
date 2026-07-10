@@ -2,7 +2,7 @@
 title: "La Parole Avant Tout — Chat Anonyme"
 status: final
 created: 2026-07-06
-updated: 2026-07-08
+updated: 2026-07-10
 ---
 
 # PRD : La Parole Avant Tout — Chat Anonyme
@@ -16,7 +16,7 @@ Ce PRD s'adresse à Charles et à son binôme, les deux organisateurs-développe
 
 "La Parole Avant Tout" doit devenir l'endroit où un élève du Lycée Français Charles de Gaulle de Londres qui traverse le harcèlement, l'exclusion, ou simplement l'incertitude sur comment bien réagir face à un camarade marginalisé, sait qu'il peut écrire — sans compte, sans révéler qui il est — et qu'une personne réelle, elle-même élève du lycée, va lire et répondre. Pas un formulaire de contact, pas un chatbot : un vrai espace de parole avec un vrai filet de sécurité derrière.
 
-Le produit tient sa promesse à deux niveaux à la fois. Au niveau relationnel, il remplace la solitude ("je ne peux en parler à personne sans être exposé") par une proximité crédible : ce sont des pairs qui répondent, pas des adultes, ce qui change concrètement qui ose écrire. Au niveau de la sécurité, il assume que la confiance donnée par l'anonymat ne doit jamais se retourner contre l'élève au moment où sa vie pourrait être en jeu — d'où un filet à deux étages (numéros d'urgence automatiques + escalade humaine vers la CPE/counsellor) qui ne repose jamais sur la seule vigilance de deux lycéens.
+Le produit tient sa promesse à deux niveaux à la fois. Au niveau relationnel, il remplace la solitude ("je ne peux en parler à personne sans être exposé") par une proximité crédible : ce sont des pairs qui répondent, pas des adultes, ce qui change concrètement qui ose écrire. Au niveau de la sécurité, il assume que la confiance donnée par l'anonymat ne doit jamais se retourner contre l'élève au moment où sa vie pourrait être en jeu — d'où une détection automatique de danger qui alerte silencieusement les deux Organisateurs, couplée à l'escalade humaine vers la CPE/counsellor (§4.6), pour que le filet de sécurité ne repose jamais sur la seule vigilance passive de deux lycéens qui liraient les messages au fil de l'eau. `[DÉCISION 2026-07-10]` Ce filet n'affiche plus aucun numéro d'urgence à l'élève lui-même, à aucun moment — voir §4.5, FR-8 (retiré) et FR-10 (révisé).
 
 Réussir, ce n'est pas seulement "le chat fonctionne techniquement" — c'est que la page "Discussion Anonyme" du site, aujourd'hui une promesse vide, devienne un mécanisme réel que le lycée peut constater de ses propres yeux. Le message clé déjà affiché sur le site, "s'exprimer est le premier pas vers le changement", cesse alors d'être un slogan sans preuve pour devenir une promesse tenue.
 
@@ -26,7 +26,7 @@ Réussir, ce n'est pas seulement "le chat fonctionne techniquement" — c'est qu
 
 - **En tant qu'élève qui subit du harcèlement ou de l'exclusion**, je veux pouvoir écrire ce qui m'arrive sans que qui que ce soit puisse remonter jusqu'à moi, pour être soulagé d'en parler sans risquer d'aggraver ma situation sociale.
 - **En tant qu'élève face à la demande d'amitié d'un camarade exclu que je ne souhaite pas satisfaire**, je veux un endroit où poser la question "comment je fais pour ne pas le/la rejeter brutalement tout en protégeant mes limites", sans avoir à en parler ouvertement à un adulte ou à mes amis.
-- **En tant qu'élève, quel que soit mon profil**, je veux savoir que si j'écris quelque chose de grave sur moi-même, on ne va pas juste "me lire" — on va me montrer immédiatement où trouver de l'aide, même si personne n'a encore lu mon message.
+- **En tant qu'élève, quel que soit mon profil**, je veux savoir que si j'écris quelque chose de grave sur moi-même, on ne va pas juste "me lire" plus tard — un signal part immédiatement vers les deux Organisateurs, même si aucun des deux n'a encore ouvert mon message. `[DÉCISION 2026-07-10]` Ce signal reste invisible pour moi : je ne suis jamais prévenu, avant ou pendant, qu'une alerte a été déclenchée.
 - **En tant qu'organisateur (Charles ou son binôme)**, je veux être notifié dès qu'un message arrive pour pouvoir répondre dans un délai raisonnable, sans avoir à surveiller le site en continu pendant les cours.
 - **En tant qu'organisateur**, je veux pouvoir distinguer rapidement un message qui nécessite une vigilance particulière (Signal de danger) d'un message ordinaire, pour prioriser mon temps de réponse limité.
 
@@ -41,7 +41,7 @@ Réussir, ce n'est pas seulement "le chat fonctionne techniquement" — c'est qu
 - **UJ-1. Amara écrit son premier message sur ce qu'elle subit.**
   - **Persona + contexte :** Amara, en classe de troisième, est mise à l'écart par un groupe de camarades depuis plusieurs semaines. Elle a peur que parler à un adulte "fasse toute une histoire".
   - **État d'entrée :** aucune authentification, elle arrive sur la page "Discussion Anonyme" du site depuis son téléphone, en dehors des heures de cours.
-  - **Parcours :** elle ouvre la page de chat → lit un texte court expliquant l'anonymat et ses limites (Signal de danger = numéros d'urgence affichés, FR-10) avant que le champ de saisie ne s'active (FR-14) → choisit "Sauvegarder ma conversation" et crée un Code personnalisé (FR-16, FR-17) → écrit son message → l'envoie.
+  - **Parcours :** elle ouvre la page de chat → lit un texte court expliquant l'anonymat et sa limite (Signal de danger = alerte envoyée aux Organisateurs, FR-10) avant que le champ de saisie ne s'active (FR-14) → choisit "Sauvegarder ma conversation" et crée un Code personnalisé (FR-16, FR-17) → écrit son message → l'envoie.
   - **Climax :** un accusé de réception automatique s'affiche immédiatement ("Bien reçu. On te répond dès qu'on peut, on est aussi au lycée toute la journée."), lui confirmant que le message est parti sans qu'elle ait à se demander si "ça a marché".
   - **Résolution :** Amara ferme l'onglet, rassurée d'avoir été entendue sans s'être exposée. Rien ne lui est demandé (pas de compte) — juste le Code qu'elle a choisi elle-même.
   - **Cas limite :** si elle revient depuis un autre appareil ou après avoir vidé son cache, elle retrouve sa conversation en saisissant son Code (FR-18) ; si elle avait choisi le mode éphémère, en revanche, aucun retour n'est possible — c'est un choix qu'elle a fait, pas un bug.
@@ -64,9 +64,9 @@ Réussir, ce n'est pas seulement "le chat fonctionne techniquement" — c'est qu
   - **Persona + contexte :** Un élève écrit une phrase qui évoque des idées noires, un soir, hors des heures de cours. Ce parcours reste volontairement sans prénom : contrairement à Amara, Basile ou Léo, il décrit un cas de danger qui peut concerner n'importe quel profil du chat (UJ-1 ou UJ-5), pas une situation propre à un persona particulier.
   - **État d'entrée :** aucune authentification, comme UJ-1.
   - **Parcours :** il écrit et envoie son message → le système détecte automatiquement des signaux de danger dans le texte (voir FR-9) → sans attendre qu'un organisateur lise le message.
-  - **Climax :** l'écran affiche immédiatement et systématiquement les numéros d'urgence pertinents (Royaume-Uni), indépendamment de la rapidité de réponse humaine. En parallèle, la conversation est signalée visuellement comme prioritaire côté organisateurs.
-  - **Résolution :** l'organisateur, dès qu'il voit le signalement, suit le protocole d'escalade (§4.6) : il alerte la CPE/counsellor sans révéler qui est l'Élève, et les numéros d'urgence affichés à l'Élève (FR-10) incluent la ligne directe de la CPE/counsellor — l'Élève reste seul décisionnaire de se dévoiler ou non à un adulte de confiance de son propre lycée. `[ASSUMPTION]` la détection automatique repose sur une liste de mots-clés/expressions à risque (pas d'IA de compréhension du langage) — approche volontairement simple pour rester constructible par une équipe débutante ; à valider avec Charles.
-  - **Cas limite :** un message peut évoquer un danger sans utiliser les mots-clés attendus (faux négatif) — c'est pourquoi le filet humain (l'organisateur qui lit) reste la deuxième ligne de défense, jamais remplacée par la détection automatique.
+  - **Climax :** `[DÉCISION 2026-07-10]` rien ne change à l'écran pour l'élève — il voit exactement le même accusé de réception que pour n'importe quel autre message (FR-3), sans aucune indication qu'une détection a eu lieu. En parallèle et silencieusement, les deux Organisateurs reçoivent une alerte immédiate et la conversation est signalée visuellement comme prioritaire côté organisateurs.
+  - **Résolution :** l'organisateur, dès qu'il voit le signalement, suit le protocole d'escalade (§4.6) : il alerte la CPE/counsellor sans révéler qui est l'Élève. C'est l'Organisateur, dans sa réponse humaine à la Conversation, qui reste le seul canal par lequel l'Élève peut être orienté vers de l'aide — le produit ne montre jamais lui-même de numéro à l'Élève. `[ASSUMPTION]` la détection automatique repose sur une liste de mots-clés/expressions à risque (pas d'IA de compréhension du langage) — approche volontairement simple pour rester constructible par une équipe débutante ; à valider avec Charles.
+  - **Cas limite :** un message peut évoquer un danger sans utiliser les mots-clés attendus (faux négatif) — c'est pourquoi le filet humain (l'organisateur qui lit et répond) reste la **seule** ligne de défense après la détection ; il n'y a plus de filet automatique visible pour l'élève en second recours.
 
 - **UJ-5. Léo cherche comment ne pas rejeter brutalement un camarade exclu.** Léo, sollicité en amitié par un élève marginalisé qu'il n'a pas envie de fréquenter, écrit sur le même chat anonyme (FR-1) pour demander comment poser une limite saine sans le blesser ni se sentir obligé d'accepter une relation qu'il ne souhaite pas. Il reçoit le même accusé de réception (FR-3) et la même réponse humaine d'un organisateur (FR-6) qu'Amara — le mécanisme est identique, seul le motif du message diffère. Il peut aussi trouver des repères sans écrire, via la section dédiée du site (FR-13).
 
@@ -78,8 +78,8 @@ Réussir, ce n'est pas seulement "le chat fonctionne techniquement" — c'est qu
 - **Code de récupération** — identifiant alphanumérique choisi par l'Élève (pas généré par le système) permettant de retrouver sa Conversation depuis n'importe quel appareil. Optionnel : n'existe que si l'Élève a choisi de sauvegarder sa conversation (FR-16, FR-17). Absent en mode éphémère.
 - **Conversation** — fil d'échange entre un Élève (via sa Session anonyme et/ou son Code de récupération) et les Organisateurs, contenant un ou plusieurs messages dans les deux sens.
 - **Accusé de réception automatique** — message affiché immédiatement après l'envoi d'un message par l'Élève, assisté par IA, confirmant la bonne réception et fixant une attente honnête de délai de réponse.
-- **Signal de danger** — contenu d'un message évoquant un risque sérieux pour l'Élève (ex. idées suicidaires). Déclenche l'affichage des Numéros d'urgence et un signalement visuel côté Organisateurs.
-- **Numéros d'urgence** — liste de contacts d'urgence pertinents au Royaume-Uni (ex. Samaritans, Childline, urgences) **et** la ligne directe de la CPE/counsellor du lycée, affichés systématiquement dès détection d'un Signal de danger. Appeler la CPE/counsellor depuis cette liste reste toujours à l'initiative de l'Élève ; les Organisateurs ne transmettent jamais son identité à sa place.
+- **Signal de danger** — contenu d'un message évoquant un risque sérieux pour l'Élève (ex. idées suicidaires). Déclenche une alerte silencieuse aux Organisateurs et un signalement visuel prioritaire côté interface Organisateurs — **jamais** un affichage quelconque côté Élève (`[DÉCISION 2026-07-10]`, voir FR-10).
+- **Numéros d'urgence** `[RETIRÉ, 2026-07-10]` — ancien concept : liste de contacts (Samaritans, Childline, urgences, ligne CPE/counsellor) que le système affichait à l'Élève. Ce comportement est annulé (voir FR-8, FR-10) ; ces contacts restent uniquement des informations internes à la procédure d'escalade des Organisateurs (FR-11), jamais montrées à l'Élève par le produit.
 - **Protocole d'escalade** — procédure humaine suivie par les Organisateurs face à un Signal de danger qui les dépasse : une alerte téléphonique à la CPE/counsellor, sans révéler l'identité de l'Élève (que les Organisateurs ne connaissent pas), pour la préparer à recevoir un éventuel appel direct de l'Élève.
 - **CPE / Counsellor** — soutien ponctuel du lycée, joignable par téléphone par les Organisateurs en cas de Signal de danger, sans accès direct au système (Non-Utilisateurs, §2.2).
 - **Notification** — alerte envoyée aux Organisateurs à réception d'un nouveau message ; canal technique non figé dans ce PRD (décision d'architecture).
@@ -210,16 +210,15 @@ Un Organisateur est notifié après qu'un Élève envoie un nouveau message, via
 - Au moins un Organisateur reçoit la notification en moins de 10 minutes dans au moins 90 % des cas pendant les heures d'ouverture habituelles du service (hors nuit profonde). `[ASSUMPTION]` seuil provisoire à ajuster une fois le canal choisi en architecture — l'important est qu'il soit chiffré, pas qu'il soit exactement ce nombre.
 - La notification fonctionne indépendamment du fait que le message contienne ou non un Signal de danger (voir aussi FR-10 pour la priorisation en cas de danger, et FR-15 pour le plancher de secours).
 
-### 4.5 Détection de Signal de danger et affichage des numéros d'urgence
+### 4.5 Détection de Signal de danger et alerte aux organisateurs `[RENOMMÉ, 2026-07-10]`
 
-**Description :** Le filet de sécurité automatique du produit : indépendamment de la rapidité de réponse des Organisateurs, un message évoquant un danger sérieux déclenche systématiquement l'affichage de ressources d'urgence à l'Élève. Réalise UJ-4. `[ASSUMPTION]` mécanisme proposé : détection automatique par liste de mots-clés/expressions à risque (pas de modèle d'IA de compréhension du langage), pour rester simple à construire et faire évoluer par une équipe débutante. À confirmer avec Charles — voir §8, Questions ouvertes.
+**Description :** Le filet de sécurité automatique du produit : indépendamment de la rapidité de réponse des Organisateurs, un message évoquant un danger sérieux déclenche systématiquement une alerte immédiate et silencieuse vers les deux Organisateurs. Réalise UJ-4. `[DÉCISION 2026-07-10]` Ce filet n'affiche plus rien à l'Élève, ni en permanence (ancien FR-8, retiré) ni au moment de la détection (FR-10, révisé) — raison : avertir ou montrer quoi que ce soit à l'Élève sur ce sujet risquerait de provoquer l'auto-censure d'un élève réellement en détresse, ou de suggérer à tort qu'une aide automatique existe alors que seule la lecture humaine agit. `[ASSUMPTION]` mécanisme de détection proposé : liste de mots-clés/expressions à risque (pas de modèle d'IA de compréhension du langage), pour rester simple à construire et faire évoluer par une équipe débutante. À confirmer avec Charles — voir §8, Questions ouvertes.
 
-#### FR-8 : Bandeau permanent de ressources d'urgence
+#### FR-8 : ~~Bandeau permanent de ressources d'urgence~~ `[RETIRÉ, 2026-07-10]`
 
-Indépendamment de toute détection, l'interface de chat affiche en permanence un accès visible aux ressources d'urgence (numéros UK), pour qu'aucun élève n'en soit privé faute de détection.
+**Décision de Charles (2026-07-10) :** ce FR est annulé. L'interface de chat n'affiche **aucun** numéro d'urgence à l'Élève, ni en permanence ni sur détection — cette exigence a été implémentée puis retirée avant tout déploiement en production (voir Story 2.1, `_bmad-output/implementation-artifacts/2-1-bandeau-permanent-de-numeros-durgence.md`). Conservé ici numéroté (au lieu d'être supprimé) pour ne pas décaler la numérotation des FR suivants et pour garder une trace de ce qui a été envisagé puis écarté.
 
-**Conséquences (testables) :**
-- Le bandeau/lien vers les numéros d'urgence est visible sur chaque écran du chat, sans clic caché.
+**Conséquence produit** : le filet de sécurité automatique du produit (§1, Vision) perd son volet visible côté Élève. Seule la détection silencieuse (FR-9/FR-10, qui alerte les Organisateurs) et l'escalade humaine (FR-11) subsistent comme filet — voir NFR "Résilience du filet de sécurité" (également retiré, §11).
 
 #### FR-9 : Détection automatique de Signal de danger
 
@@ -231,19 +230,19 @@ Le système analyse chaque message envoyé par un Élève à la recherche de mot
 - La liste de mots-clés est révisable par les Organisateurs sans intervention technique lourde `[ASSUMPTION]` — à confirmer si c'est un besoin réel dès la v1 ou si un fichier de config suffit.
 - Un Organisateur peut marquer rétroactivement une Conversation comme "aurait dû déclencher FR-9 mais ne l'a pas fait" — ce signalement alimente une revue régulière de la liste de mots-clés (voir SM-2bis, §7).
 
-#### FR-10 : Affichage immédiat des numéros d'urgence sur détection
+#### FR-10 : Alerte silencieuse aux Organisateurs sur détection `[RÉVISÉ, 2026-07-10]`
 
-Dès qu'un Signal de danger est détecté (FR-9), l'Élève voit s'afficher immédiatement et de façon non-manquable les Numéros d'urgence pertinents, sans attendre de réponse humaine.
+Dès qu'un Signal de danger est détecté (FR-9), une alerte est envoyée immédiatement aux deux Organisateurs — **sans jamais rien afficher, annoncer, ni suggérer à l'Élève**, ni au moment de l'envoi ni à aucun autre moment de sa session. `[DÉCISION 2026-07-10]` Version précédente de ce FR (affichage immédiat des numéros d'urgence à l'Élève) annulée sur décision de Charles, cohérente avec le retrait de FR-8 : l'Élève ne doit voir aucun numéro d'urgence nulle part dans le produit, y compris en cas de détection.
 
 **Conséquences (testables) :**
-- L'affichage se déclenche dans la même interaction que l'envoi du message (pas de rechargement de page requis).
-- L'affichage ne dépend d'aucune action d'un Organisateur.
-- La liste affichée inclut la ligne directe de la CPE/counsellor du lycée, en plus des numéros nationaux (Samaritans, Childline, urgences) — c'est le seul canal qui permette une aide concrète et personnalisée, puisque le produit ne peut jamais transmettre l'identité de l'Élève à sa place.
+- La détection déclenche l'alerte dans la même interaction que l'envoi du message (pas de rechargement de page requis), côté serveur uniquement.
+- L'Élève ne reçoit et ne voit strictement rien de différent d'un message ordinaire (même accusé de réception, FR-3) — l'alerte est invisible pour lui.
 - La Conversation correspondante est simultanément marquée prioritaire pour les Organisateurs (FR-5), et la notification (FR-7) part vers les **deux** Organisateurs simultanément dans ce cas précis — jamais un seul face à la décision d'escalade.
+- C'est dans l'interface Organisateurs, jamais dans l'interface Élève, que la CPE/counsellor et les numéros nationaux (Samaritans, Childline, urgences) peuvent être référencés — comme aide-mémoire pour l'Organisateur qui suit le protocole d'escalade (FR-11), jamais comme contenu montré à l'Élève.
 
 **NFR spécifiques à cette fonctionnalité :**
-- Faux négatifs (un vrai Signal de danger non détecté) : atténués par le fait que les Organisateurs lisent tout de même chaque message humainement — la détection automatique est un filet supplémentaire, jamais un substitut à la lecture humaine.
-- Faux positifs (déclenchement sur un message qui n'évoque pas réellement un danger) : à surveiller pour éviter une lassitude de l'Élève face à un bandeau d'urgence qui apparaîtrait à tort trop souvent (voir SM-C1, §7).
+- Faux négatifs (un vrai Signal de danger non détecté) : atténués par le fait que les Organisateurs lisent tout de même chaque message humainement — la détection automatique est un filet supplémentaire, jamais un substitut à la lecture humaine. Ce filet humain est désormais la **seule** ligne de défense après la détection, l'Élève n'ayant plus aucun accès automatique à une ressource d'urgence via le produit.
+- Faux positifs (déclenchement sur un message qui n'évoque pas réellement un danger) : sans impact visible pour l'Élève (rien ne s'affiche jamais chez lui) — le coût d'un faux positif se limite désormais à une conversation marquée prioritaire à tort côté Organisateurs, pas à une lassitude côté Élève (voir SM-C1, §7, reformulée en conséquence).
 
 #### FR-15 : Relance automatique en cas de non-lecture d'un message prioritaire
 
@@ -310,7 +309,7 @@ Aucune deadline externe ne contraint ce périmètre : le lancement a lieu quand 
 - Chat anonyme fonctionnel (envoi, choix sauvegarde-par-code vs éphémère, continuité par cookie et/ou Code, divulgation de la limite de confidentialité, accusé de réception) — §4.1, §4.2.
 - Interface organisateurs (authentification, consultation, réponse) — §4.3.
 - Notification rapide aux organisateurs, avec relance automatique en cas de non-lecture d'un message prioritaire, canal à déterminer en architecture — §4.4, §4.5 (FR-15).
-- Détection automatique de Signal de danger + bandeau permanent de numéros d'urgence (incluant la ligne CPE/counsellor) — §4.5.
+- Détection automatique de Signal de danger déclenchant une alerte silencieuse aux Organisateurs, sans aucun affichage de numéro d'urgence côté Élève (`[DÉCISION 2026-07-10]`, ancien FR-8 retiré) — §4.5.
 - Ébauche de procédure d'escalade humaine vers la CPE/counsellor — §4.6 (prête pour construire ; sa confirmation formelle est un prérequis de lancement public distinct, voir §8).
 - Réorganisation du site autour du chat + section dédiée au deuxième profil — §4.7.
 
@@ -327,21 +326,21 @@ Aucune deadline externe ne contraint ce périmètre : le lancement a lieu quand 
 
 **Principaux**
 - **SM-1** : 100 % des messages envoyés reçoivent un accusé de réception automatique immédiat (< 2 s). Valide FR-3.
-- **SM-2** : 100 % des messages détectés comme Signal de danger déclenchent l'affichage des numéros d'urgence, sans exception. Valide FR-9, FR-10.
+- **SM-2** : 100 % des messages détectés comme Signal de danger déclenchent une alerte aux Organisateurs, sans exception. Valide FR-9, FR-10. `[RÉVISÉ 2026-07-10]` (mesurait auparavant l'affichage de numéros à l'Élève, FR-8/FR-10 désormais retiré/révisé)
 - **SM-2bis** : Nombre de Conversations signalées a posteriori par un Organisateur comme "aurait dû déclencher FR-9 mais ne l'a pas fait", revu mensuellement pour mettre à jour la liste de mots-clés. Contrairement à SM-2 (câblage mécanique), cette métrique mesure le taux réel de faux négatifs de la détection. Valide FR-9.
 - **SM-3** : Délai médian de première réponse humaine à un message sous 24h (cible honnête, cohérente avec l'emploi du temps d'organisateurs lycéens). Valide FR-6, FR-7.
 - **SM-4** : Zéro fuite d'identité d'un Élève en dehors des deux Organisateurs authentifiés (aucun accès tiers constaté). Valide FR-1, FR-4.
 
 **Secondaires**
-- **SM-5** : Le lycée (CPE, direction), lors d'une présentation, peut constater un outil fonctionnel et obtenir une réponse claire à "que se passe-t-il en cas d'urgence ?". Valide FR-8, FR-10, FR-11.
+- **SM-5** : Le lycée (CPE, direction), lors d'une présentation, peut constater un outil fonctionnel et obtenir une réponse claire à "que se passe-t-il en cas d'urgence ?". Valide FR-10, FR-11. `[RÉVISÉ 2026-07-10]` (référence à FR-8 retirée, FR annulé)
 
 **Contre-métriques (à ne pas optimiser)**
-- **SM-C1** : Le taux de faux positifs de la détection de Signal de danger (FR-9) ne doit pas être optimisé à la baisse au prix de rater de vrais signaux — mieux vaut un bandeau d'urgence affiché "à tort" occasionnellement qu'un vrai signal manqué. Contrebalance une tentation future de rendre la détection "moins sensible" pour réduire le bruit.
+- **SM-C1** : Le taux de faux positifs de la détection de Signal de danger (FR-9) ne doit pas être optimisé à la baisse au prix de rater de vrais signaux — mieux vaut une conversation marquée prioritaire "à tort" occasionnellement côté Organisateurs qu'un vrai signal manqué. Contrebalance une tentation future de rendre la détection "moins sensible" pour réduire le bruit. `[RÉVISÉ 2026-07-10]` (le coût d'un faux positif ne concerne plus l'Élève, FR-8 retiré — seuls les Organisateurs voient une priorisation à tort)
 - **SM-C2** : Le délai de réponse (SM-3) ne doit pas être optimisé au prix de réponses expédiées ou impersonnelles — la qualité et la chaleur humaine de la réponse priment sur la vitesse pure. Contrebalance SM-3.
 
 ## 8. Questions ouvertes
 
-1. Le mécanisme de détection de Signal de danger proposé ici (liste de mots-clés, §4.5) est une hypothèse à valider avec Charles — une alternative plus légère (aucune détection automatique, juste le bandeau permanent FR-8) reste possible si la maintenance d'une liste de mots-clés s'avère trop lourde pour l'équipe.
+1. Le mécanisme de détection de Signal de danger proposé ici (liste de mots-clés, §4.5) est une hypothèse à valider avec Charles. `[MISE À JOUR 2026-07-10]` L'alternative évoquée précédemment (aucune détection automatique, se reposer sur un bandeau permanent) n'est plus disponible : FR-8 a été retiré, l'Élève ne doit voir aucun numéro d'urgence via le produit — si la détection automatique s'avère trop lourde à maintenir, la seule alternative restante est la lecture humaine seule (sans filet automatique du tout), à trancher explicitement avec Charles plutôt que présumée par défaut.
 2. Qui maintient durablement le nom de domaine et l'hébergement (renouvellement, sécurité, sauvegardes) — question ouverte identifiée dans l'addendum du brief, probablement Charles et son binôme avec accompagnement.
 3. Le canal technique de notification (WhatsApp, email, push web) — à trancher en architecture, pas dans ce PRD.
 4. Le seuil provisoire de FR-7 (10 min / 90 %) et le plancher de FR-15 (4h) sont des propositions de départ, pas des chiffres validés par retour d'expérience — à ajuster une fois le canal choisi et le produit en usage réel.
@@ -354,7 +353,7 @@ Ces points ne bloquent pas la construction du produit, mais bloquent expliciteme
 - **Statut légal du projet clarifié** vis-à-vis du lycée (initiative élève indépendante vs service reconnu par l'établissement) — détermine qui est responsable du traitement des données au sens du UK GDPR / Children's Code de l'ICO. `[NOTE FOR PM]` mérite un avis extérieur (juridique ou lycée), pas seulement une lecture de ce PRD.
 - **Capacité des deux Organisateurs, mineurs, à porter cette responsabilité** validée par un adulte de confiance (école ou parent) — le brief documente un choix assumé, mais aucune vérification externe de cette capacité n'a eu lieu à ce jour.
 - **Durée de conservation des Conversations et politique de suppression** définie — non tranchée ; pertinent au vu du caractère sensible des données (santé mentale de mineurs) signalé par la recherche de cadrage (voir addendum, §Contraintes légales UK).
-- **Liste des numéros d'urgence (nationaux + CPE/counsellor) validée** dans sa forme finale — celle citée dans l'addendum est une recherche de cadrage, pas une liste confirmée.
+- **Liste des numéros d'urgence (nationaux + CPE/counsellor) validée** dans sa forme finale, pour usage interne des Organisateurs dans le cadre du protocole d'escalade (FR-11) — celle citée dans l'addendum est une recherche de cadrage, pas une liste confirmée. `[MISE À JOUR 2026-07-10]` Ne concerne plus un affichage produit côté Élève (FR-8/FR-10 ne montrent plus rien à l'Élève) : cette liste sert uniquement d'aide-mémoire aux Organisateurs eux-mêmes.
 
 ## 9. Index des hypothèses
 
@@ -376,7 +375,7 @@ Ces points ne bloquent pas la construction du produit, mais bloquent expliciteme
 - **Accès restreint** : seuls les deux Organisateurs authentifiés peuvent lire les Conversations — aucun tiers, y compris la CPE/counsellor, n'a d'accès direct (FR-4).
 - **Le Code de récupération est un secret, pas un identifiant** : quiconque le connaît accède à la Conversation (FR-18). L'Élève en est averti à la création (FR-17), et la limitation des tentatives de saisie (FR-18) réduit le risque qu'un tiers le devine par essais successifs — un Code choisi par l'Élève étant par nature moins imprévisible qu'un code généré aléatoirement.
 - **Anonymat total, y compris en cas de danger** : contrairement à des services comme Crisis Text Line ou Childline UK qui peuvent, en dernier recours, tracer un appelant, ce produit ne lève jamais l'anonymat de son propre chef (voir mécanisme complet en §4.5/§4.6) — l'Élève en est informé avant d'écrire (FR-14).
-- **Filet à deux étages** : automatique (FR-8, FR-10, FR-15) et humain (FR-11), jamais l'un sans l'autre.
+- **Filet à un étage visible pour l'Élève, deux étages côté produit** `[RÉVISÉ 2026-07-10]` : détection silencieuse (FR-9, FR-10) + relance (FR-15), qui alertent uniquement les Organisateurs, jamais l'Élève ; puis escalade humaine (FR-11). L'ancien FR-8 (bandeau permanent visible par l'Élève) est retiré — il n'existe donc plus de filet automatique *visible* par l'Élève lui-même, uniquement un filet automatique *agissant en coulisse* vers les Organisateurs, suivi du filet humain.
 - **Responsabilité assumée** : les Organisateurs portent explicitement la responsabilité de premier niveau des échanges, en connaissance de cause (choix documenté dans le brief).
 - **Risque structurel assumé** : contrairement aux services comparables (Crisis Text Line, Childline, 3018 — voir addendum), ce produit fonctionne sans supervision adulte ou clinique en temps réel sur les messages. Ce n'est pas un oubli mais un compromis délibéré du brief, atténué par le filet à deux étages ci-dessus — à garder en tête si le produit gagne en visibilité ou en volume de messages.
 
@@ -389,4 +388,4 @@ Ces points ne bloquent pas la construction du produit, mais bloquent expliciteme
 
 - **Simplicité de maintenance** : toute décision technique doit rester constructible et maintenable par une équipe de deux développeurs débutants sans accompagnement soutenu — principe directeur hérité du brief, applicable à chaque FR de ce document.
 - **Disponibilité** : le chat doit rester accessible en continu (l'urgence ne suit pas les heures de cours), même si la réponse humaine, elle, ne l'est pas.
-- **Résilience du filet de sécurité** : FR-8 (bandeau permanent) ne doit jamais dépendre de FR-9 (détection) pour fonctionner — si la détection automatique tombe en panne, le bandeau reste visible.
+- ~~**Résilience du filet de sécurité** : FR-8 (bandeau permanent) ne doit jamais dépendre de FR-9 (détection) pour fonctionner — si la détection automatique tombe en panne, le bandeau reste visible.~~ `[RETIRÉ, 2026-07-10]` Sans objet depuis le retrait de FR-8 (rien n'est plus affiché à l'Élève, avec ou sans détection). Conservée ici, barrée, pour traçabilité — ne pas réintroduire cette exigence sans réintroduire FR-8 lui-même.

@@ -41,7 +41,7 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 2026-07-08
-last_updated: 2026-07-09 (Story 2.1 en revue)
+last_updated: 2026-07-10 (FR-8 retire, FR-10 revise dans PRD/epics/architecture)
 project: la-parole-contre-tous
 project_key: NOKEY
 tracking_system: file-system
@@ -79,8 +79,10 @@ action_items:
   - epic: 1
     action: "Mettre a jour FR-10 (PRD), AD-6 (Architecture Spine) et l'AC #2 de la Story 2.2 (epics.md) : bascule vers alerte silencieuse aux organisateurs, plus de popup numeros d'urgence cote eleve"
     owner: "Charles / John (PM)"
-    status: open
+    status: done
+    resolution: "2026-07-10 : FR-10 reformule dans le PRD (alerte silencieuse), AD-6 complete dans l'Architecture Spine, AC de la Story 2.2 reecrite dans epics.md. Fait en meme temps que l'action item epic 2 ci-dessous (les deux decisions se recoupent)."
   - epic: 2
     action: "Decision de Charles (2026-07-10) : le bandeau permanent de numeros d'urgence (FR-8, Story 2.1) est annule - l'eleve ne doit voir aucun numero d'urgence nulle part dans le chat, meme hors detection. Code de la Story 2.1 reverte (emergency-banner.tsx supprime, page.tsx revert). A mettre a jour : FR-8/NFR-3 (PRD), Story 2.1 (epics.md), Capability Map FR-8 (Architecture Spine). Impact produit a noter : le filet de securite automatique du PRD (Vision SS1, 'numeros d'urgence automatiques + escalade humaine') perd son premier etage ; seule l'escalade humaine (FR-11) reste comme filet apres detection silencieuse (FR-10, deja en cours de refonte)."
     owner: "Charles / John (PM)"
-    status: open
+    status: done
+    resolution: "2026-07-10 : FR-8 marque retire dans le PRD (Vision, Glossaire, SM-2/SM-5/SM-C1, garde-fous SS10/SS11, prerequis SS8), Story 2.1 marquee annulee dans epics.md (conservee barree pour tracabilite), Capability Map FR-8 retiree dans l'Architecture Spine."

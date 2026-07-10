@@ -30,7 +30,7 @@ FR-6: Réponse à une conversation — un Organisateur authentifié peut écrire
 
 FR-7: Notification quasi instantanée — un Organisateur est notifié après qu'un Élève envoie un nouveau message, via un canal à déterminer en architecture (résolu : Telegram, voir AD-7). Cible : au moins un Organisateur notifié en moins de 10 minutes dans au moins 90% des cas en heures d'ouverture.
 
-FR-8: Bandeau permanent de ressources d'urgence — l'interface de chat affiche en permanence, sur chaque écran, un accès visible aux numéros d'urgence (UK), indépendamment de toute détection automatique.
+FR-8: ~~Bandeau permanent de ressources d'urgence — l'interface de chat affiche en permanence, sur chaque écran, un accès visible aux numéros d'urgence (UK), indépendamment de toute détection automatique.~~ `[RETIRÉ 2026-07-10]` Décision de Charles : l'élève ne doit voir aucun numéro d'urgence nulle part dans le produit, même hors détection. Conservé numéroté pour ne pas décaler la numérotation des FR suivants.
 
 FR-9: Détection automatique de Signal de danger — le système analyse chaque message élève à la recherche de mots-clés/expressions à risque (idées suicidaires, automutilation) et déclenche FR-10 systématiquement en cas de correspondance, au moment de l'envoi, avant lecture humaine. Un Organisateur peut signaler rétroactivement un faux négatif (alimente SM-2bis).
 
@@ -60,11 +60,11 @@ NFR-1: Simplicité de maintenance — toute décision technique doit rester cons
 
 NFR-2: Disponibilité — le chat doit rester accessible en continu, même si la réponse humaine ne l'est pas.
 
-NFR-3: Résilience du filet de sécurité — FR-8 (bandeau permanent) ne doit jamais dépendre de FR-9 (détection) pour fonctionner.
+NFR-3: ~~Résilience du filet de sécurité — FR-8 (bandeau permanent) ne doit jamais dépendre de FR-9 (détection) pour fonctionner.~~ `[RETIRÉ 2026-07-10]` Sans objet depuis le retrait de FR-8 — rien n'est plus affiché à l'élève, avec ou sans détection.
 
 NFR-4: Faux négatifs de détection (FR-9) atténués par la lecture humaine systématique de chaque message — la détection automatique est un filet supplémentaire, jamais un substitut.
 
-NFR-5: Faux positifs de détection (FR-9) à surveiller pour éviter une lassitude de l'Élève face à un bandeau d'urgence affiché à tort trop souvent (contre-métrique SM-C1 : ne jamais réduire la sensibilité pour réduire ce bruit).
+NFR-5: Faux positifs de détection (FR-9) à surveiller — depuis le retrait de FR-8 `[RÉVISÉ 2026-07-10]`, le coût d'un faux positif ne touche plus l'Élève (rien ne s'affiche jamais chez lui) mais se limite à une conversation marquée prioritaire à tort côté Organisateurs (contre-métrique SM-C1 : ne jamais réduire la sensibilité pour réduire ce bruit).
 
 NFR-6: Accès restreint aux Conversations — seuls les deux Organisateurs authentifiés peuvent lire les Conversations ; aucun tiers, y compris la CPE/counsellor, n'a d'accès direct.
 
@@ -108,9 +108,9 @@ FR-4: Epic 3 - Authentification des organisateurs
 FR-5: Epic 3 - Consultation des conversations
 FR-6: Epic 3 - Réponse à une conversation
 FR-7: Epic 3 - Notification quasi instantanée
-FR-8: Epic 2 - Bandeau permanent de ressources d'urgence
+FR-8: ~~Epic 2 - Bandeau permanent de ressources d'urgence~~ `[RETIRÉ 2026-07-10]`
 FR-9: Epic 2 - Détection automatique de Signal de danger
-FR-10: Epic 2 - Affichage immédiat des numéros d'urgence sur détection
+FR-10: Epic 2 - Alerte silencieuse aux organisateurs sur détection `[RÉVISÉ 2026-07-10]`
 FR-11: Epic 2 - Procédure d'escalade documentée
 FR-12: Epic 4 - Point d'entrée clair vers le chat
 FR-13: Epic 4 - Contenu dédié au deuxième profil
@@ -128,8 +128,8 @@ Un élève peut écrire et envoyer un message sans compte, choisir de sauvegarde
 **FRs covered:** FR-1, FR-2, FR-3, FR-14, FR-16, FR-17, FR-18, FR-19
 
 ### Epic 2: Filet de sécurité (détection de danger)
-Indépendamment de tout le reste, un message évoquant un danger sérieux déclenche systématiquement l'affichage des numéros d'urgence, et les organisateurs disposent d'une procédure écrite pour l'escalade humaine vers la CPE/counsellor. Dépend d'Epic 1 (un message doit pouvoir être envoyé pour être analysé) mais reste un bloc autonome et livrable indépendamment du reste.
-**FRs covered:** FR-8, FR-9, FR-10, FR-11
+Indépendamment de tout le reste, un message évoquant un danger sérieux déclenche systématiquement une alerte silencieuse aux organisateurs (jamais un affichage côté élève), et les organisateurs disposent d'une procédure écrite pour l'escalade humaine vers la CPE/counsellor. Dépend d'Epic 1 (un message doit pouvoir être envoyé pour être analysé) mais reste un bloc autonome et livrable indépendamment du reste. `[DÉCISION 2026-07-10]` FR-8 (bandeau permanent de numéros d'urgence côté élève) est retiré du périmètre : l'élève ne doit voir aucun numéro d'urgence nulle part dans le produit.
+**FRs covered:** ~~FR-8~~ (retiré), FR-9, FR-10, FR-11
 
 ### Epic 3: Organisateurs — consultation, réponse et notification
 Charles et Basile s'authentifient, voient la liste des conversations (priorité visuelle sur les signaux de danger), répondent, sont notifiés sur Telegram dès qu'un message arrive, et reçoivent une relance si un message prioritaire reste non lu après 4h.
@@ -217,32 +217,34 @@ So that je ne suis pas bloqué sur un seul appareil.
 
 ## Epic 2: Filet de sécurité (détection de danger)
 
-Indépendamment de tout le reste, un message évoquant un danger sérieux déclenche systématiquement l'affichage des numéros d'urgence, et les organisateurs disposent d'une procédure écrite pour l'escalade humaine vers la CPE/counsellor. Dépend d'Epic 1 (un message doit pouvoir être envoyé pour être analysé) mais reste un bloc autonome et livrable indépendamment du reste. Note : la partie "notifier les deux organisateurs sur Telegram" de FR-10 est terminée dans l'Epic 3, une fois le canal Telegram construit — cette epic se limite au marquage prioritaire en base et à l'affichage élève, sans dépendre d'une story future.
+Indépendamment de tout le reste, un message évoquant un danger sérieux déclenche systématiquement une alerte silencieuse vers les organisateurs (jamais affichée à l'élève), et les organisateurs disposent d'une procédure écrite pour l'escalade humaine vers la CPE/counsellor. Dépend d'Epic 1 (un message doit pouvoir être envoyé pour être analysé) mais reste un bloc autonome et livrable indépendamment du reste. Note : la partie "notifier les deux organisateurs sur Telegram" de FR-10 est terminée dans l'Epic 3, une fois le canal Telegram construit — cette epic se limite au marquage prioritaire en base, sans affichage élève d'aucune sorte (`[DÉCISION 2026-07-10]`, FR-8 retiré), sans dépendre d'une story future.
 
-### Story 2.1: Bandeau permanent de numéros d'urgence
+### Story 2.1: ~~Bandeau permanent de numéros d'urgence~~ `[ANNULÉE, 2026-07-10]`
 
-As a élève sur le chat,
+**Décision de Charles (2026-07-10) :** cette story est annulée. L'élève ne doit voir aucun numéro d'urgence nulle part dans le chat, y compris un bandeau permanent indépendant de la détection. La story avait été entièrement implémentée et revue en code avant cette décision ; le code correspondant a été reverté avant tout commit/déploiement (voir `_bmad-output/implementation-artifacts/2-1-bandeau-permanent-de-numeros-durgence.md` pour l'historique complet). Conservée ici, barrée, pour traçabilité — ne pas réimplémenter sans nouvelle décision explicite de Charles.
+
+~~As a élève sur le chat,
 I want toujours voir les numéros d'urgence, indépendamment de toute détection automatique,
-So that j'y ai accès même si la détection est en panne ou rate quelque chose.
+So that j'y ai accès même si la détection est en panne ou rate quelque chose.~~
 
-**Acceptance Criteria:**
+~~**Acceptance Criteria:**~~
 
-**Given** je suis sur n'importe quel écran du chat
-**Then** un bandeau/lien vers les numéros d'urgence (UK) est visible sans clic caché
-**And** ce bandeau ne dépend d'aucun mécanisme de détection — il reste affiché même si la détection automatique est désactivée ou en panne
+~~**Given** je suis sur n'importe quel écran du chat~~
+~~**Then** un bandeau/lien vers les numéros d'urgence (UK) est visible sans clic caché~~
+~~**And** ce bandeau ne dépend d'aucun mécanisme de détection — il reste affiché même si la détection automatique est désactivée ou en panne~~
 
-### Story 2.2: Détection automatique de Signal de danger et affichage immédiat des numéros
+### Story 2.2: Détection automatique de Signal de danger et alerte silencieuse aux organisateurs `[RÉVISÉ, 2026-07-10]`
 
 As a élève qui écrit un message évoquant un danger sérieux,
-I want voir immédiatement les numéros d'urgence pertinents sans attendre une réponse humaine,
-So that j'ai de l'aide tout de suite, quelle que soit la rapidité d'un organisateur à lire mon message.
+I want que ma détresse déclenche une alerte immédiate vers les organisateurs sans que j'aie besoin de rien faire de plus,
+So that de l'aide humaine puisse arriver vite, même si personne n'a encore lu mon message — sans que rien ne me soit montré ni ne me signale que quelque chose s'est déclenché.
 
 **Acceptance Criteria:**
 
 **Given** j'envoie un message contenant un mot-clé/expression de la liste de danger
 **When** le message est envoyé
 **Then** le système le détecte côté serveur avant l'écriture en base et avant l'accusé de réception
-**And** les numéros d'urgence pertinents (nationaux UK + ligne CPE/counsellor) s'affichent immédiatement, dans la même interaction, sans rechargement de page
+**And** `[DÉCISION 2026-07-10]` je ne vois rien de différent d'un message ordinaire : le même accusé de réception s'affiche (FR-3), sans aucun numéro d'urgence ni indication qu'une détection a eu lieu — l'alerte part uniquement vers les organisateurs (jamais affichée côté élève)
 **And** la Conversation est marquée prioritaire en base de données (`is_priority = true`), prête à être utilisée par l'interface organisateurs (Epic 3)
 **And** la liste de mots-clés est un fichier de configuration versionné (`lib/danger-keywords.ts`) — la modifier veut dire éditer ce fichier et redéployer
 **And** le modèle de données prévoit dès maintenant un champ pour qu'un Organisateur puisse, plus tard (Epic 3), signaler rétroactivement un message qui aurait dû être détecté (`flagged_missed_danger`)
