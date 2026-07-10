@@ -41,7 +41,7 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 2026-07-08
-last_updated: 2026-07-10 (FR-8 retire, FR-10 revise dans PRD/epics/architecture)
+last_updated: 2026-07-10 (Story 2.2 done, apres code-review et corrections)
 project: la-parole-contre-tous
 project_key: NOKEY
 tracking_system: file-system
@@ -57,8 +57,8 @@ development_status:
   epic-1-retrospective: done
 
   epic-2: in-progress
-  2-1-bandeau-permanent-de-numeros-durgence: backlog
-  2-2-detection-automatique-de-signal-de-danger-et-affichage-immediat-des-numeros: backlog
+  2-1-bandeau-permanent-de-numeros-durgence: cancelled
+  2-2-detection-automatique-de-signal-de-danger-et-affichage-immediat-des-numeros: done
   2-3-procedure-descalade-humaine-documentee: backlog
   epic-2-retrospective: optional
 

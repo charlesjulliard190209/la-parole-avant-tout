@@ -16,6 +16,7 @@ import {
   verifySecret,
 } from "@/lib/session";
 import { getAccuseReceptionAleatoire } from "@/lib/accuse-reception";
+import { containsDangerSignal } from "@/lib/danger-keywords";
 
 export type ChoisirModeSauvegarderState = {
   error: string | null;
@@ -134,6 +135,12 @@ export async function envoyerMessage(
     };
   }
 
+  // Détection (FR-9) : fonction pure, sans I/O — calculée avant tout appel
+  // Supabase pour satisfaire "détecté avant l'écriture en base" (AC #1).
+  // Le résultat n'est jamais renvoyé à l'Élève (AC #2, #7) : il ne sert qu'à
+  // marquer la Conversation prioritaire plus bas (FR-10).
+  const signalDanger = containsDangerSignal(message);
+
   try {
     const { data: conversation, error: conversationError } = await supabaseServer
       .from("conversations")
@@ -177,6 +184,36 @@ export async function envoyerMessage(
         insertError
       );
       return { error: ERREUR_GENERIQUE_ENVOI, accuse: null };
+    }
+
+    // FR-10 : marquage silencieux en base uniquement — jamais l'inverse
+    // (ne jamais écrire is_priority: false, cf. AC #4) pour ne pas effacer
+    // une priorisation antérieure légitime d'un message précédent. L'envoi
+    // de l'alerte Telegram elle-même reste hors périmètre (Epic 3). Différée
+    // via after() (même motif que recordRecoveryAttempt ci-dessous) : cette
+    // écriture n'est jamais lue par l'appelant et son échec est déjà avalé
+    // en interne — inutile de faire attendre l'Élève sur ce round-trip
+    // Supabase supplémentaire, surtout pour le message qui en a le plus
+    // besoin (revue de code Story 2.2).
+    if (signalDanger) {
+      after(async () => {
+        const { error: priorityError } = await supabaseServer
+          .from("conversations")
+          .update({ is_priority: true })
+          .eq("id", conversationId);
+
+        if (priorityError) {
+          // Ne bloque jamais l'Élève (NFR-2) : le message est déjà bien
+          // envoyé. Le filet humain (lecture par les Organisateurs) et le
+          // signalement a posteriori (flagged_missed_danger, Epic 3) restent
+          // le filet de secours en cas d'échec de cette écriture.
+          console.error(
+            "Échec de la mise à jour is_priority (Signal de danger) :",
+            conversationId,
+            priorityError
+          );
+        }
+      });
     }
 
     return { error: null, accuse: getAccuseReceptionAleatoire() };
