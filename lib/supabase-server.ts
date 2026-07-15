@@ -1,13 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
+import { requireEnv } from './env'
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-if (!supabaseUrl || !supabaseServiceRoleKey) {
-  throw new Error(
-    'Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables'
-  )
-}
+const supabaseUrl = requireEnv('SUPABASE_URL')
+const supabaseServiceRoleKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY')
 
 // Server-only client: uses the service role key, which bypasses Row Level
 // Security by design (AD-4). Never import this file from a Client Component.
