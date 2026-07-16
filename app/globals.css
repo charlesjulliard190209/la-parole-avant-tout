@@ -1,26 +1,152 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  Mode sombre piloté par la préférence système (prefers-color-scheme),
+  comme avant l'introduction de shadcn. On NE bascule PAS sur le mode `.dark`
+  par classe (défaut shadcn) : les parcours existants (discussion-anonyme,
+  organisateurs) utilisent des variantes `dark:` pilotées par l'OS et doivent
+  s'afficher comme avant (Story 4.0, AC #5).
+  Tailwind v4 mappe déjà `dark:` sur `prefers-color-scheme` par défaut,
+  donc aucun `@custom-variant dark` n'est nécessaire ici.
+*/
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-nunito-sans);
+  --font-heading: var(--font-nunito);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/*
+  Palette « Doux & rassurant » — mode clair.
+  Référence validée par Charles le 2026-07-16 (cf. story 4.0 § Palette).
+  Mood visé : chaud, arrondi, non-clinique, apaisant.
+*/
+:root {
+  --background: #fbf7f2; /* crème */
+  --foreground: #3a322c; /* brun profond */
+  --card: #fefcfa; /* blanc chaud */
+  --card-foreground: #3a322c;
+  --popover: #fefcfa;
+  --popover-foreground: #3a322c;
+  --primary: #b35a38; /* terracotta profonde — assombrie pour contraste AA (≈4.7:1 avec texte blanc) */
+  --primary-foreground: #ffffff;
+  --secondary: #8aa391; /* vert sauge */
+  --secondary-foreground: #3a322c;
+  --muted: #f0e9e1; /* crème sombre */
+  --muted-foreground: #6b6157; /* brun grisé — assombri pour contraste AA (≈5.6:1 sur crème) */
+  --accent: #dce6de; /* sauge clair */
+  --accent-foreground: #3a322c;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: #e7ddd2; /* beige */
+  --input: #e7ddd2;
+  --ring: #b35a38; /* terracotta profonde (aligné sur primary) */
+  --radius: 0.9rem; /* arrondi large et généreux */
+  /* charts / sidebar : non utilisés dans le MVP, teintes chaudes cohérentes */
+  --chart-1: #d98a6a;
+  --chart-2: #8aa391;
+  --chart-3: #c7a98c;
+  --chart-4: #b5836a;
+  --chart-5: #7a6e63;
+  --sidebar: #fefcfa;
+  --sidebar-foreground: #3a322c;
+  --sidebar-primary: #d98a6a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dce6de;
+  --sidebar-accent-foreground: #3a322c;
+  --sidebar-border: #e7ddd2;
+  --sidebar-ring: #d98a6a;
+}
+
+/*
+  Mode sombre : jeu de tokens chaud, neutre et cohérent — pour que les
+  composants shadcn restent corrects en sombre sans casser les parcours
+  existants. Le MVP public vise la version claire ; ce n'est pas un
+  design sombre abouti (cf. story 4.0 § Mode sombre).
+*/
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #211d1a;
+    --foreground: #ede6de;
+    --card: #2a2420;
+    --card-foreground: #ede6de;
+    --popover: #2a2420;
+    --popover-foreground: #ede6de;
+    --primary: #e3a184; /* terracotta éclairci pour lisibilité en sombre */
+    --primary-foreground: #2a1d15;
+    --secondary: #6e8b78; /* sauge assourdie */
+    --secondary-foreground: #f2eee9;
+    --muted: #332c27;
+    --muted-foreground: #b3a79b;
+    --accent: #3a443c;
+    --accent-foreground: #ede6de;
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: #3d352f;
+    --input: #3d352f;
+    --ring: #e3a184;
+    --chart-1: #e3a184;
+    --chart-2: #8aa391;
+    --chart-3: #c7a98c;
+    --chart-4: #b5836a;
+    --chart-5: #b3a79b;
+    --sidebar: #2a2420;
+    --sidebar-foreground: #ede6de;
+    --sidebar-primary: #e3a184;
+    --sidebar-primary-foreground: #2a1d15;
+    --sidebar-accent: #3a443c;
+    --sidebar-accent-foreground: #ede6de;
+    --sidebar-border: #3d352f;
+    --sidebar-ring: #e3a184;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }
