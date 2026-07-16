@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { Logo } from "@/components/logo";
 import { Reveal } from "@/components/reveal";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
@@ -29,14 +30,7 @@ export default function Home() {
         <section className="mx-auto flex w-full max-w-3xl flex-col items-center gap-6 px-6 pb-16 pt-16 text-center sm:pt-24">
           {/* Logo décoratif ici : le nom du site est repris juste en dessous en
               texte, inutile de le faire annoncer deux fois par les lecteurs d'écran. */}
-          <Image
-            src="/logo.png"
-            alt=""
-            width={322}
-            height={120}
-            className="h-24 w-auto sm:h-28"
-            priority
-          />
+          <Logo aria-hidden="true" className="h-24 w-auto sm:h-28" />
           {/* Repère observé par SiteHeader : tant qu'il est visible, on est « en
               haut » (en-tête masqué). Dès qu'il passe au-dessus du viewport
               (logo défilé), l'en-tête apparaît. */}
@@ -167,13 +161,7 @@ export default function Home() {
       {/* Footer — hors de <main> pour conserver le rôle landmark « contentinfo ». */}
       <footer className="border-t border-border">
         <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-3 px-6 py-8 text-center">
-          <Image
-            src="/logo.png"
-            alt="La Parole Avant Tout"
-            width={97}
-            height={36}
-            className="h-9 w-auto"
-          />
+          <Logo className="h-9 w-auto" />
           <p className="text-sm text-muted-foreground">
             La Parole Avant Tout © 2026
           </p>

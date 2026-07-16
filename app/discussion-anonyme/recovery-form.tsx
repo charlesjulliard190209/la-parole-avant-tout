@@ -1,6 +1,11 @@
 "use client";
 
 import { useActionState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 import {
   recupererConversationParCode,
   type RecupererCodeState,
@@ -8,6 +13,10 @@ import {
 
 const initialState: RecupererCodeState = { error: null };
 
+/*
+  « J'ai un Code » tab panel — rendered inside the mode Tabs on
+  discussion-anonyme (no card border of its own).
+*/
 export function RecoveryForm() {
   const [state, formAction, isPending] = useActionState(
     recupererConversationParCode,
@@ -15,26 +24,15 @@ export function RecoveryForm() {
   );
 
   return (
-    <form
-      action={formAction}
-      className="space-y-3 rounded-xl border border-zinc-200 p-4 dark:border-zinc-700"
-    >
-      <h2 className="font-medium text-zinc-900 dark:text-zinc-50">
-        J&apos;ai déjà un Code
-      </h2>
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+    <form action={formAction} className="flex flex-col gap-4">
+      <p className="text-sm text-muted-foreground">
         Retrouve ta conversation depuis n&apos;importe quel appareil en
         saisissant le Code que tu as créé.
       </p>
 
-      <div>
-        <label
-          className="block text-sm text-zinc-700 dark:text-zinc-300"
-          htmlFor="recovery-code"
-        >
-          Ton Code
-        </label>
-        <input
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="recovery-code">Ton Code</Label>
+        <Input
           id="recovery-code"
           name="code"
           type="text"
@@ -43,23 +41,23 @@ export function RecoveryForm() {
           required
           pattern="[a-zA-Z0-9]{6,20}"
           autoComplete="off"
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-base text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-50"
         />
       </div>
 
       {state.error && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-sm font-medium text-destructive">
           {state.error}
         </p>
       )}
 
-      <button
+      <Button
         type="submit"
+        variant="outline"
         disabled={isPending}
-        className="w-full rounded-lg border border-zinc-300 px-4 py-2 text-zinc-900 disabled:opacity-50 dark:border-zinc-600 dark:text-zinc-50"
+        className="w-full"
       >
         {isPending ? "Vérification…" : "Retrouver ma conversation"}
-      </button>
+      </Button>
     </form>
   );
 }

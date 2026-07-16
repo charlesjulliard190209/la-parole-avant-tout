@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { requireOrganisateur } from "@/lib/supabase-auth";
 import { seDeconnecter } from "./actions";
 
@@ -15,23 +16,18 @@ export default async function OrganisateursPage() {
   await requireOrganisateur();
 
   return (
-    <main className="flex flex-1 flex-col items-center bg-zinc-50 px-4 py-10 dark:bg-black sm:py-16">
-      <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-900 sm:p-8">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+    <main className="flex flex-1 flex-col items-center bg-background px-4 py-10 sm:py-16">
+      <div className="w-full max-w-xl rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+        <h1 className="font-heading text-2xl font-bold text-foreground">
           Espace Organisateurs
         </h1>
 
-        <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
-          Tu es connecté.
-        </p>
+        <p className="mt-4 text-sm text-muted-foreground">Tu es connecté.</p>
 
         <form action={seDeconnecter} className="mt-6">
-          <button
-            type="submit"
-            className="rounded-lg border border-zinc-300 px-4 py-2 text-zinc-900 dark:border-zinc-600 dark:text-zinc-50"
-          >
+          <Button type="submit" variant="outline">
             Se déconnecter
-          </button>
+          </Button>
         </form>
       </div>
     </main>

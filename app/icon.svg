@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Favicon « Aube » — two solid speech bubbles (blue = the team,
+       peach = the student). Served automatically by Next.js as the
+       site icon. Same artwork as public/favicon-aube.svg. -->
+  <g fill="#1F4E6B">
+    <circle cx="24" cy="23" r="16"/>
+    <path d="M14 34 L8 48 L24 38 Z"/>
+  </g>
+  <g fill="#E1793B">
+    <circle cx="40" cy="36" r="19"/>
+    <path d="M34 52 L40 63 L46 51 Z"/>
+  </g>
+</svg>

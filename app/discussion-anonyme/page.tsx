@@ -1,5 +1,10 @@
+import { BookmarkIcon, HourglassIcon, KeyRoundIcon } from "lucide-react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { choisirModeEphemere } from "./actions";
 import { ConversationThread, type Message } from "./conversation-thread";
 import { MessageForm } from "./message-form";
@@ -114,13 +119,13 @@ export default async function DiscussionAnonymePage({
   }
 
   return (
-    <main className="flex flex-1 flex-col items-center bg-zinc-50 px-4 py-10 dark:bg-black sm:py-16">
-      <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-900 sm:p-8">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+    <main className="flex flex-1 flex-col items-center bg-background px-4 py-10 sm:py-16">
+      <div className="w-full max-w-xl rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+        <h1 className="font-heading text-2xl font-bold text-foreground">
           Discussion anonyme
         </h1>
 
-        <div className="mt-4 space-y-4 text-base leading-7 text-zinc-700 dark:text-zinc-300">
+        <div className="mt-4 space-y-4 text-base leading-7 text-muted-foreground">
           <p>
             Tu peux écrire ici sans donner ton nom, ton email, ni rien qui
             permette de te reconnaître. Une vraie personne du lycée va lire ce
@@ -129,53 +134,78 @@ export default async function DiscussionAnonymePage({
         </div>
 
         {etapePrete && conversationId ? (
-          <div className="mt-6 space-y-4">
+          <div className="mt-6 flex flex-col gap-4">
             <ConversationThread messages={messages} />
             <MessageForm conversationId={conversationId} />
           </div>
         ) : (
-          <div className="mt-6 space-y-4">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <div className="mt-6 flex flex-col gap-4">
+            <p className="text-sm text-muted-foreground">
               Avant de commencer, choisis comment tu veux discuter :
             </p>
 
             {erreurEphemere && (
-              <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+              <p role="alert" className="text-sm font-medium text-destructive">
                 Une erreur est survenue pendant la création de ta
                 conversation. Réessaie.
               </p>
             )}
 
-            <ModeChoiceSauvegarder />
+            {/*
+              The three modes as tabs: stacked forms were unreadable on
+              mobile. Icons hide below `sm` so the three labels fit on a
+              phone-width TabsList.
+            */}
+            <Tabs defaultValue="sauvegarder">
+              <TabsList>
+                <TabsTrigger value="sauvegarder">
+                  <BookmarkIcon aria-hidden className="hidden sm:block" />
+                  Sauvegarder
+                </TabsTrigger>
+                <TabsTrigger value="code">
+                  <KeyRoundIcon aria-hidden className="hidden sm:block" />
+                  Mon Code
+                </TabsTrigger>
+                <TabsTrigger value="ephemere">
+                  <HourglassIcon aria-hidden className="hidden sm:block" />
+                  Éphémère
+                </TabsTrigger>
+              </TabsList>
 
-            <RecoveryForm />
+              <TabsContent value="sauvegarder">
+                <ModeChoiceSauvegarder />
+              </TabsContent>
 
-            <form
-              action={choisirModeEphemere}
-              className="space-y-3 rounded-xl border border-zinc-200 p-4 dark:border-zinc-700"
-            >
-              <h2 className="font-medium text-zinc-900 dark:text-zinc-50">
-                Chat éphémère
-              </h2>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                Rien n&apos;est sauvegardé : pas de Code, pas de cookie.
-              </p>
-              <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
-                Attention : tu ne pourras pas revenir plus tard lire une
-                réponse.
-              </p>
-              <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
-                Ne partage jamais le lien de cette page une fois ta
-                conversation commencée, et ne le mets pas dans tes favoris :
-                n&apos;importe qui l&apos;ayant pourrait écrire à ta place.
-              </p>
-              <button
-                type="submit"
-                className="w-full rounded-lg border border-zinc-300 px-4 py-2 text-zinc-900 dark:border-zinc-600 dark:text-zinc-50"
-              >
-                Continuer en éphémère
-              </button>
-            </form>
+              <TabsContent value="code">
+                <RecoveryForm />
+              </TabsContent>
+
+              <TabsContent value="ephemere">
+                <form
+                  action={choisirModeEphemere}
+                  className="flex flex-col gap-4"
+                >
+                  <p className="text-sm text-muted-foreground">
+                    Rien n&apos;est sauvegardé : pas de Code, pas de cookie.
+                  </p>
+                  <div className="flex flex-col gap-2 rounded-lg border border-accent bg-accent/50 p-3 text-sm font-medium text-accent-foreground">
+                    <p>
+                      Attention : tu ne pourras pas revenir plus tard lire une
+                      réponse.
+                    </p>
+                    <p>
+                      Ne partage jamais le lien de cette page une fois ta
+                      conversation commencée, et ne le mets pas dans tes
+                      favoris : n&apos;importe qui l&apos;ayant pourrait écrire
+                      à ta place.
+                    </p>
+                  </div>
+                  <Button type="submit" variant="outline" className="w-full">
+                    Continuer en éphémère
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
           </div>
         )}
       </div>

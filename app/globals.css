@@ -57,85 +57,87 @@
 }
 
 /*
-  Palette « Doux & rassurant » — mode clair.
-  Référence validée par Charles le 2026-07-16 (cf. story 4.0 § Palette).
-  Mood visé : chaud, arrondi, non-clinique, apaisant.
+  Palette « Aube » — mode clair. Validée par Fab le 2026-07-16 sur /styleguide
+  (v1), en remplacement de « Doux & rassurant ».
+  Source : Color Hunt pêche/abricot/ivoire/ciel (#FFBE91 #FFDDB0 #FFFCE1
+  #CFEBFF) + ancres foncées dérivées pour le contraste AA.
+  Signature : conversation bicolore — l'élève parle en pêche (accent),
+  l'équipe répond en bleu ciel (secondary).
 */
 :root {
-  --background: #fbf7f2; /* crème */
-  --foreground: #3a322c; /* brun profond */
-  --card: #fefcfa; /* blanc chaud */
-  --card-foreground: #3a322c;
-  --popover: #fefcfa;
-  --popover-foreground: #3a322c;
-  --primary: #b35a38; /* terracotta profonde — assombrie pour contraste AA (≈4.7:1 avec texte blanc) */
-  --primary-foreground: #ffffff;
-  --secondary: #8aa391; /* vert sauge */
-  --secondary-foreground: #3a322c;
-  --muted: #f0e9e1; /* crème sombre */
-  --muted-foreground: #6b6157; /* brun grisé — assombri pour contraste AA (≈5.6:1 sur crème) */
-  --accent: #dce6de; /* sauge clair */
-  --accent-foreground: #3a322c;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #e7ddd2; /* beige */
-  --input: #e7ddd2;
-  --ring: #b35a38; /* terracotta profonde (aligné sur primary) */
+  --background: #fffce1; /* ivoire — lumière du matin */
+  --foreground: #453521; /* encre brune (≈11:1 sur ivoire) */
+  --card: #fffef7; /* blanc chaud */
+  --card-foreground: #453521;
+  --popover: #fffef7;
+  --popover-foreground: #453521;
+  --primary: #ffa766; /* pêche — CTA à texte brun foncé (≈6:1), pas de blanc sur orange */
+  --primary-foreground: #50310f;
+  --secondary: #cfebff; /* bleu ciel — le calme de l'équipe */
+  --secondary-foreground: #1f4e6b; /* ardoise bleue (≈7:1 sur bleu ciel) */
+  --muted: #faf0c8; /* ivoire dense */
+  --muted-foreground: #76644a; /* brun doré — contraste AA sur ivoire et muted */
+  --accent: #ffddb0; /* abricot — survols et présence de l'élève */
+  --accent-foreground: #5a3a15;
+  --destructive: #c04530; /* brique douce — AA en texte sur ivoire et en fond sous blanc */
+  --border: #f0e2c0; /* sable */
+  --input: #e9d8b2; /* sable appuyé pour délimiter les champs */
+  --ring: #e1793b; /* pêche profonde — focus */
   --radius: 0.9rem; /* arrondi large et généreux */
-  /* charts / sidebar : non utilisés dans le MVP, teintes chaudes cohérentes */
-  --chart-1: #d98a6a;
-  --chart-2: #8aa391;
-  --chart-3: #c7a98c;
-  --chart-4: #b5836a;
-  --chart-5: #7a6e63;
-  --sidebar: #fefcfa;
-  --sidebar-foreground: #3a322c;
-  --sidebar-primary: #d98a6a;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #dce6de;
-  --sidebar-accent-foreground: #3a322c;
-  --sidebar-border: #e7ddd2;
-  --sidebar-ring: #d98a6a;
+  /* charts / sidebar : non utilisés dans le MVP, teintes alignées sur Aube */
+  --chart-1: #ffa766;
+  --chart-2: #8fc4e8;
+  --chart-3: #e1793b;
+  --chart-4: #c9b892;
+  --chart-5: #76644a;
+  --sidebar: #fffef7;
+  --sidebar-foreground: #453521;
+  --sidebar-primary: #ffa766;
+  --sidebar-primary-foreground: #50310f;
+  --sidebar-accent: #ffddb0;
+  --sidebar-accent-foreground: #5a3a15;
+  --sidebar-border: #f0e2c0;
+  --sidebar-ring: #e1793b;
 }
 
 /*
-  Mode sombre : jeu de tokens chaud, neutre et cohérent — pour que les
-  composants shadcn restent corrects en sombre sans casser les parcours
-  existants. Le MVP public vise la version claire ; ce n'est pas un
-  design sombre abouti (cf. story 4.0 § Mode sombre).
+  Mode sombre « Brun de nuit » — le pendant nocturne du fond ivoire :
+  brun chaud profond, pêche lumineuse pour les actions, bulles élève en
+  abricot nuit et équipe en bleu profond. Validé avec la v1 (2026-07-16).
 */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #211d1a;
-    --foreground: #ede6de;
-    --card: #2a2420;
-    --card-foreground: #ede6de;
-    --popover: #2a2420;
-    --popover-foreground: #ede6de;
-    --primary: #e3a184; /* terracotta éclairci pour lisibilité en sombre */
-    --primary-foreground: #2a1d15;
-    --secondary: #6e8b78; /* sauge assourdie */
-    --secondary-foreground: #f2eee9;
-    --muted: #332c27;
-    --muted-foreground: #b3a79b;
-    --accent: #3a443c;
-    --accent-foreground: #ede6de;
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: #3d352f;
-    --input: #3d352f;
-    --ring: #e3a184;
-    --chart-1: #e3a184;
-    --chart-2: #8aa391;
-    --chart-3: #c7a98c;
-    --chart-4: #b5836a;
-    --chart-5: #b3a79b;
-    --sidebar: #2a2420;
-    --sidebar-foreground: #ede6de;
-    --sidebar-primary: #e3a184;
-    --sidebar-primary-foreground: #2a1d15;
-    --sidebar-accent: #3a443c;
-    --sidebar-accent-foreground: #ede6de;
-    --sidebar-border: #3d352f;
-    --sidebar-ring: #e3a184;
+    --background: #211a10; /* brun de nuit */
+    --foreground: #f3ead2; /* ivoire doux */
+    --card: #2b2315;
+    --card-foreground: #f3ead2;
+    --popover: #2b2315;
+    --popover-foreground: #f3ead2;
+    --primary: #ffbe91; /* pêche lumineuse */
+    --primary-foreground: #4a2c12;
+    --secondary: #24384a; /* bleu profond */
+    --secondary-foreground: #cfebff;
+    --muted: #332a19;
+    --muted-foreground: #c9b892;
+    --accent: #3d2f1a; /* abricot nuit */
+    --accent-foreground: #ffddb0;
+    --destructive: #e5674a;
+    --border: #3e3420;
+    --input: #3e3420;
+    --ring: #ffbe91;
+    --chart-1: #ffbe91;
+    --chart-2: #8fc4e8;
+    --chart-3: #e1793b;
+    --chart-4: #c9b892;
+    --chart-5: #a99b7d;
+    --sidebar: #2b2315;
+    --sidebar-foreground: #f3ead2;
+    --sidebar-primary: #ffbe91;
+    --sidebar-primary-foreground: #4a2c12;
+    --sidebar-accent: #3d2f1a;
+    --sidebar-accent-foreground: #ffddb0;
+    --sidebar-border: #3e3420;
+    --sidebar-ring: #ffbe91;
   }
 }
 
