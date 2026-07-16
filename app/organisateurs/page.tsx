@@ -1,5 +1,9 @@
 import { requireOrganisateur } from "@/lib/supabase-auth";
 import { supabaseServer } from "@/lib/supabase-server";
+import {
+  calculerDernierMessageEleveParConversation,
+  estNonTraitee,
+} from "@/lib/conversation-lecture";
 import { seDeconnecter } from "./actions";
 import { ConversationList, type ConversationSummary } from "./conversation-list";
 
@@ -84,20 +88,8 @@ async function chargerConversations(): Promise<ChargementConversations> {
     erreurMessages = true;
   }
 
-  const dernierMessageEleveParConversation = new Map<string, string>();
-
-  for (const message of messages) {
-    const dernier = dernierMessageEleveParConversation.get(
-      message.conversation_id
-    );
-
-    if (!dernier || Date.parse(message.created_at) > Date.parse(dernier)) {
-      dernierMessageEleveParConversation.set(
-        message.conversation_id,
-        message.created_at
-      );
-    }
-  }
+  const dernierMessageEleveParConversation =
+    calculerDernierMessageEleveParConversation(messages);
 
   const resume: ConversationSummary[] = conversations.map((conversation) => {
     const dernierMessageEleve =
@@ -107,15 +99,9 @@ async function chargerConversations(): Promise<ChargementConversations> {
     // quelles Conversations ont un message élève non lu — on les considère
     // toutes comme "non traitées" plutôt que de risquer de cacher
     // silencieusement un Signal de danger derrière un incident Supabase.
-    // Sans erreur : une Conversation sans aucun message élève connu est
-    // toujours "traitée" (rien n'attend de traitement) — c'est le seul cas
-    // où dernierMessageEleve est null en fonctionnement normal.
     const nonTraitee =
       erreurMessages ||
-      (dernierMessageEleve !== null &&
-        (conversation.last_organizer_read_at === null ||
-          Date.parse(conversation.last_organizer_read_at) <
-            Date.parse(dernierMessageEleve)));
+      estNonTraitee(conversation.last_organizer_read_at, dernierMessageEleve);
 
     return {
       id: conversation.id,

@@ -41,7 +41,7 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 2026-07-08
-last_updated: 2026-07-16 (Stories 3.2 et 3.3 : revue de code terminee, passage en done)
+last_updated: 2026-07-16 (Story 3.5 : implémentation terminée via dev-story, passage en review)
 project: la-parole-contre-tous
 project_key: NOKEY
 tracking_system: file-system
@@ -66,8 +66,8 @@ development_status:
   3-1-authentification-des-organisateurs: done
   3-2-consultation-des-conversations: done
   3-3-reponse-a-une-conversation: done
-  3-4-notification-instantanee-sur-nouveau-message-et-notification-double-en-cas-de-priorite: backlog
-  3-5-relance-automatique-en-cas-de-non-lecture-dun-message-prioritaire: backlog
+  3-4-notification-instantanee-sur-nouveau-message-et-notification-double-en-cas-de-priorite: done
+  3-5-relance-automatique-en-cas-de-non-lecture-dun-message-prioritaire: review
   epic-3-retrospective: optional
 
   epic-4: backlog
