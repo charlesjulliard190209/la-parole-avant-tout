@@ -334,6 +334,25 @@ So that un message grave n'est jamais silencieusement oublié.
 
 Le site met en avant le chat comme point d'entrée central, et une section dédiée existe pour le deuxième profil (l'élève qui cherche comment bien réagir face à un camarade exclu).
 
+### Story 4.0: Fondation design (shadcn/ui + direction visuelle « Doux & rassurant ») `[AJOUTÉE 2026-07-16]`
+
+Story d'habilitation (enabler), pas rattachée à une FR : elle pose le socle d'interface sur lequel les Stories 4.1 et 4.2 (et, plus tard, un éventuel reskin du chat et de l'interface organisateurs) s'appuieront. Décision de Charles (2026-07-16) : rendre le site moins austère avant de construire les pages publiques.
+
+As a équipe de développement (Charles et Basile),
+I want mettre en place shadcn/ui et une direction visuelle chaleureuse validée,
+So that les pages du site reposent sur un jeu de composants cohérent et bienveillant, sans réinventer le style à chaque écran.
+
+**Acceptance Criteria:**
+
+**Given** le projet Next.js 16 + Tailwind v4 existant (config CSS via `@theme`, pas de `tailwind.config.js`)
+**When** shadcn/ui est initialisé sur le projet
+**Then** `components.json` est présent, l'utilitaire `cn()` (`lib/utils.ts`) existe, et le thème (CSS variables) est configuré dans `app/globals.css` sans casser le style existant
+**And** la direction « Doux & rassurant » est appliquée en tokens : fond crème, texte brun profond, accent terracotta doux, secondaire vert sauge, radius large (coins arrondis), typo humaniste
+**And** un jeu de composants de base réutilisables est installé, au minimum ce dont les Stories 4.1/4.2 auront besoin (bouton, carte, champ de saisie, zone de texte, navigation/sheet, séparateur, badge)
+**And** une page `/styleguide` (non liée depuis la navigation publique) présente la palette et ces composants, pour validation visuelle par Charles avant de construire les pages réelles
+**And** les pages existantes (chat élève `app/discussion-anonyme`, organisateurs `app/organisateurs`) ne sont pas cassées visuellement — c'est une fondation seule, aucun reskin de ces parcours dans cette story
+**And** l'ajout reste dans la stack verrouillée (AD-2 : contrainte serveur/hébergement — shadcn est du code de composants front-end que l'on possède, standard shadcn : Radix + class-variance-authority + tailwind-merge + clsx) et maintenable par deux développeurs débutants (NFR-1)
+
 ### Story 4.1: Point d'entrée clair vers le chat
 
 As a élève arrivant sur la page d'accueil,

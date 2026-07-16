@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 240" role="img" aria-label="La Parole Avant Tout">
+  <!-- Logo « Aube » — standalone version with fixed light-mode colors.
+       Back bubble: ardoise bleue #1F4E6B — front bubble: pêche profonde #E1793B
+       Wordmark: encre brune #453521, Nunito ExtraBold (falls back to sans-serif
+       when Nunito is not installed; convert to paths for production use). -->
+  <g transform="scale(0.92)">
+    <circle cx="100" cy="103" r="68" fill="none" stroke="#1F4E6B" stroke-width="15"/>
+    <path d="M58 148 L34 200 L92 166 Z" fill="#1F4E6B"/>
+    <circle cx="142" cy="115" r="79" fill="none" stroke="#E1793B" stroke-width="15"/>
+    <path d="M124 188 L150 238 L168 184 Z" fill="#E1793B"/>
+  </g>
+  <text x="268" y="106" font-size="86" font-weight="800" font-family="Nunito, 'Nunito Sans', sans-serif" fill="#453521">La Parole</text>
+  <text x="268" y="198" font-size="86" font-weight="800" font-family="Nunito, 'Nunito Sans', sans-serif" fill="#453521">Avant Tout</text>
+</svg>

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { requireOrganisateur } from "@/lib/supabase-auth";
 import { supabaseServer } from "@/lib/supabase-server";
 import {
@@ -160,20 +161,17 @@ export default async function OrganisateursPage({
     await chargerConversations();
 
   return (
-    <main className="flex flex-1 flex-col items-center bg-zinc-50 px-4 py-10 dark:bg-black sm:py-16">
-      <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-900 sm:p-8">
+    <main className="flex flex-1 flex-col items-center bg-background px-4 py-10 sm:py-16">
+      <div className="w-full max-w-xl rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+          <h1 className="font-heading text-2xl font-bold text-foreground">
             Espace Organisateurs
           </h1>
 
           <form action={seDeconnecter}>
-            <button
-              type="submit"
-              className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-900 dark:border-zinc-600 dark:text-zinc-50"
-            >
+            <Button type="submit" variant="outline" size="sm">
               Se déconnecter
-            </button>
+            </Button>
           </form>
         </div>
 
@@ -181,7 +179,7 @@ export default async function OrganisateursPage({
           {erreurOuvertureConversation && (
             <p
               role="alert"
-              className="mb-4 text-sm text-red-600 dark:text-red-400"
+              className="mb-4 text-sm font-medium text-destructive"
             >
               Impossible d&apos;ouvrir cette conversation. Réessaie dans
               quelques instants.
@@ -190,7 +188,7 @@ export default async function OrganisateursPage({
           {erreurConversations && (
             <p
               role="alert"
-              className="mb-4 text-sm text-red-600 dark:text-red-400"
+              className="mb-4 text-sm font-medium text-destructive"
             >
               Erreur de chargement des conversations. La liste ne peut pas
               s&apos;afficher pour l&apos;instant — réessaie dans quelques
@@ -200,7 +198,7 @@ export default async function OrganisateursPage({
           {!erreurConversations && erreurMessages && (
             <p
               role="alert"
-              className="mb-4 text-sm text-red-600 dark:text-red-400"
+              className="mb-4 text-sm font-medium text-destructive"
             >
               Erreur partielle de chargement. Les statuts &quot;non
               traitée&quot; affichés peuvent être imprécis — réessaie dans

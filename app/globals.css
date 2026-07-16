@@ -1,26 +1,152 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  Dark mode via a `.dark` class on <html>, set by next-themes
+  (attribute="class", defaultTheme="system"): without any action from the
+  student, the OS preference applies as before (Story 4.0, AC #5); the
+  mobile-menu toggle can force light/dark (persisted in localStorage).
+  The @custom-variant makes the existing `dark:` utilities follow the class
+  (Tailwind v4 otherwise maps them to prefers-color-scheme only).
+*/
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-nunito-sans);
+  --font-heading: var(--font-nunito);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+  "Aube" (dawn) palette — light mode. Validated by Fab on 2026-07-16 on
+  /styleguide (v1), replacing "Doux & rassurant".
+  Source: Color Hunt peach/apricot/ivory/sky (#FFBE91 #FFDDB0 #FFFCE1
+  #CFEBFF) + darker anchors derived for AA contrast.
+  Signature: two-tone conversation — the student speaks in peach (accent),
+  the team replies in sky blue (secondary).
+*/
+:root {
+  --background: #fffce1; /* ivory — morning light */
+  --foreground: #453521; /* brown ink (≈11:1 on ivory) */
+  --card: #fffef7; /* warm white */
+  --card-foreground: #453521;
+  --popover: #fffef7;
+  --popover-foreground: #453521;
+  --primary: #ffa766; /* peach — CTA with dark brown text (≈6:1), no white on orange */
+  --primary-foreground: #50310f;
+  --secondary: #cfebff; /* sky blue — the team's calm */
+  --secondary-foreground: #1f4e6b; /* blue slate (≈7:1 on sky blue) */
+  --muted: #faf0c8; /* dense ivory */
+  --muted-foreground: #76644a; /* golden brown — AA contrast on ivory and muted */
+  --accent: #ffddb0; /* apricot — hovers and the student's presence */
+  --accent-foreground: #5a3a15;
+  --destructive: #c04530; /* soft brick — AA as text on ivory and as background under white */
+  --border: #f0e2c0; /* sand */
+  --input: #e9d8b2; /* stronger sand to outline fields */
+  --ring: #e1793b; /* deep peach — focus */
+  --radius: 0.9rem; /* wide, generous rounding */
+  /* charts / sidebar: unused in the MVP, tints aligned with Aube */
+  --chart-1: #ffa766;
+  --chart-2: #8fc4e8;
+  --chart-3: #e1793b;
+  --chart-4: #c9b892;
+  --chart-5: #76644a;
+  --sidebar: #fffef7;
+  --sidebar-foreground: #453521;
+  --sidebar-primary: #ffa766;
+  --sidebar-primary-foreground: #50310f;
+  --sidebar-accent: #ffddb0;
+  --sidebar-accent-foreground: #5a3a15;
+  --sidebar-border: #f0e2c0;
+  --sidebar-ring: #e1793b;
+}
+
+/*
+  "Brun de nuit" dark mode — the nocturnal counterpart of the ivory
+  background: deep warm brown, luminous peach for actions, student bubbles in
+  night apricot and team ones in deep blue. Validated with v1 (2026-07-16).
+*/
+.dark {
+  --background: #211a10; /* night brown */
+  --foreground: #f3ead2; /* soft ivory */
+  --card: #2b2315;
+  --card-foreground: #f3ead2;
+  --popover: #2b2315;
+  --popover-foreground: #f3ead2;
+  --primary: #ffbe91; /* luminous peach */
+  --primary-foreground: #4a2c12;
+  --secondary: #24384a; /* deep blue */
+  --secondary-foreground: #cfebff;
+  --muted: #332a19;
+  --muted-foreground: #c9b892;
+  --accent: #3d2f1a; /* night apricot */
+  --accent-foreground: #ffddb0;
+  --destructive: #e5674a;
+  --border: #3e3420;
+  --input: #3e3420;
+  --ring: #ffbe91;
+  --chart-1: #ffbe91;
+  --chart-2: #8fc4e8;
+  --chart-3: #e1793b;
+  --chart-4: #c9b892;
+  --chart-5: #a99b7d;
+  --sidebar: #2b2315;
+  --sidebar-foreground: #f3ead2;
+  --sidebar-primary: #ffbe91;
+  --sidebar-primary-foreground: #4a2c12;
+  --sidebar-accent: #3d2f1a;
+  --sidebar-accent-foreground: #ffddb0;
+  --sidebar-border: #3e3420;
+  --sidebar-ring: #ffbe91;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }

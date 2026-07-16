@@ -1,5 +1,20 @@
 # Deferred Work
 
+## Deferred from: code review of 4-2-section-dediee-au-deuxieme-profil (2026-07-16)
+
+- `prefers-reduced-motion` lu une seule fois au montage dans `components/reveal.tsx:56` (pas d'écouteur `change`) : basculer la préférence en cours de session n'est pas pris en compte avant rechargement. Pré-existant (composant 4.1, hors diff de cette story) — déjà noté à la revue 4.1, re-signalé ici pour mémoire.
+- `Sheet` mobile (`components/site-header.tsx:125-161`) laissé ouvert au franchissement du breakpoint `sm` (rotation, resize, zoom) : le trigger hamburger devient `sm:hidden`, donc à la fermeture Radix ne retrouve pas la cible de focus et celui-ci peut retomber sur `<body>`. Edge rare (menu ouvert + resize) — aucun `onOpenChange`/garde media pour refermer au changement de breakpoint.
+- Constantes de routes (`/discussion-anonyme`, `/camarade-exclu`) désormais dupliquées sur 3 fichiers (`components/site-header.tsx:20`, `app/camarade-exclu/page.tsx:17`, `app/page.tsx`) : un renommage peut désync silencieusement une des occurrences. Dette pré-existante (pattern déjà présent avant cette story) — à centraliser (`lib/routes.ts`) quand cela vaudra le coup.
+- Footer dupliqué verbatim entre `app/camarade-exclu/page.tsx:161-174` et l'accueil, avec l'année `© 2026` codée en dur : divergence possible (lien légal, passage 2027). Candidat à un composant `SiteFooter` partagé — reporté, cohérent avec la duplication assumée à cette échelle (NFR-1).
+- `priority` sur l'image intro (`app/camarade-exclu/page.tsx:83`) alors qu'en mobile la mise en page est texte-first (le `<h1>` est vraisemblablement le LCP) : le JPEG préchargé entre en concurrence avec les fonts/titre. Perf discutable (l'image est au-dessus de la ligne de flottaison en desktop) — à mesurer avant de retirer `priority`.
+
+## Deferred from: code review of 4-1-point-dentree-clair-vers-le-chat (2026-07-16)
+
+- `prefers-reduced-motion` lu une seule fois au montage dans `components/reveal.tsx:56` (pas d'écouteur `change`) : un utilisateur qui bascule la préférence en cours de session ne la voit pas prise en compte avant rechargement. Amélioration mineure — à traiter dans un futur passage a11y.
+- Constantes `CHAT_HREF` / `CTA_LABEL` dupliquées entre `app/page.tsx` et `components/site-header.tsx` : risque de divergence silencieuse d'URL/libellé. À centraliser (ex. `lib/site.ts`) — reporté (mineur, 2 constantes, cohérent NFR-1 pour l'instant).
+- Nav secondaire du header (`Discussion anonyme`, `Aider un camarade`) en `hidden ... sm:inline` + dépendante du JS : inatteignable < 640px et sans JS. Mitigé : le CTA chat reste atteignable via le hero rendu serveur. À revoir quand la nav aura plusieurs destinations publiques (Story 4.2).
+- En-tête `fixed` sans `scroll-padding-top` correspondant : sans impact aujourd'hui (aucune ancre interne), mais tout futur lien d'ancrage/retour de focus serait masqué sous l'en-tête. Préventif.
+- Si le contenu tient sans défilement (grand écran / zoom arrière), le sentinel `#hero-logo-sentinel` reste intersecté et l'en-tête n'est jamais révélé. Cas rare sur une landing — reporté.
 ## Deferred from: code review of 3-5-relance-automatique-en-cas-de-non-lecture-dun-message-prioritaire (2026-07-16)
 
 - Fenêtre résiduelle très étroite : si l'update de réclamation (`relance_envoyee_at`, `lib/relance.ts`) réussit mais que l'annulation qui suit un échec Telegram (remise à `null`) échoue *elle aussi* (double panne Supabase quasi simultanée), la Conversation reste marquée "relancée" sans qu'aucune notification n'ait réellement été délivrée — reproduit alors, dans une fenêtre beaucoup plus étroite qu'avant la correction, le risque initial de perte silencieuse identifié en revue de code. **Décision (2026-07-16)** : risque accepté, jugé négligeable (deux échecs Supabase quasi simultanés sur la même ligne) — aucune action pour l'instant ; à revisiter si les logs Vercel montrent que ce chemin se produit en pratique.
