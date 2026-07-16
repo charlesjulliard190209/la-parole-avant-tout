@@ -224,7 +224,8 @@ export default function StyleguideV2Page() {
         Scoped theme override, v2. `.theme-aube2` swaps yellow and white in
         light mode; `.theme-aube2-dark` force-applies the night-blue dark
         tokens so the dark direction can be reviewed on a light OS. The same
-        night values also respond to prefers-color-scheme for the whole page.
+        night values also apply page-wide under the `.dark` class (set by
+        next-themes from the OS preference or the mobile-menu toggle).
       */}
       <style>{`
         .theme-aube2 {
@@ -267,27 +268,28 @@ export default function StyleguideV2Page() {
           --input: #2d3c48;
           --ring: #ffbe91;
         }
-        @media (prefers-color-scheme: dark) {
-          .theme-aube2 {
-            --background: #16212b;
-            --foreground: #efeae0;
-            --card: #1d2933;
-            --card-foreground: #efeae0;
-            --popover: #1d2933;
-            --popover-foreground: #efeae0;
-            --primary: #ffbe91;
-            --primary-foreground: #4a2c12;
-            --secondary: #2b4257;
-            --secondary-foreground: #cfebff;
-            --muted: #223039;
-            --muted-foreground: #a9bac6;
-            --accent: #3e3121;
-            --accent-foreground: #ffddb0;
-            --destructive: #e5674a;
-            --border: #2d3c48;
-            --input: #2d3c48;
-            --ring: #ffbe91;
-          }
+        /* .dark .theme-aube2 (et non prefers-color-scheme) : next-themes
+           pose la classe sur <html> pour la préférence OS comme pour le
+           toggle du menu mobile — l'aperçu reste synchronisé avec le site. */
+        .dark .theme-aube2 {
+          --background: #16212b;
+          --foreground: #efeae0;
+          --card: #1d2933;
+          --card-foreground: #efeae0;
+          --popover: #1d2933;
+          --popover-foreground: #efeae0;
+          --primary: #ffbe91;
+          --primary-foreground: #4a2c12;
+          --secondary: #2b4257;
+          --secondary-foreground: #cfebff;
+          --muted: #223039;
+          --muted-foreground: #a9bac6;
+          --accent: #3e3121;
+          --accent-foreground: #ffddb0;
+          --destructive: #e5674a;
+          --border: #2d3c48;
+          --input: #2d3c48;
+          --ring: #ffbe91;
         }
       `}</style>
 

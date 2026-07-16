@@ -342,27 +342,28 @@ export default function StyleguidePage() {
           --input: #3e3420;
           --ring: #ffbe91;
         }
-        @media (prefers-color-scheme: dark) {
-          .theme-aube {
-            --background: #211a10;
-            --foreground: #f3ead2;
-            --card: #2b2315;
-            --card-foreground: #f3ead2;
-            --popover: #2b2315;
-            --popover-foreground: #f3ead2;
-            --primary: #ffbe91;
-            --primary-foreground: #4a2c12;
-            --secondary: #24384a;
-            --secondary-foreground: #cfebff;
-            --muted: #332a19;
-            --muted-foreground: #c9b892;
-            --accent: #3d2f1a;
-            --accent-foreground: #ffddb0;
-            --destructive: #e5674a;
-            --border: #3e3420;
-            --input: #3e3420;
-            --ring: #ffbe91;
-          }
+        /* .dark .theme-aube (et non prefers-color-scheme) : next-themes
+           pose la classe sur <html> pour la préférence OS comme pour le
+           toggle du menu mobile — l'aperçu reste synchronisé avec le site. */
+        .dark .theme-aube {
+          --background: #211a10;
+          --foreground: #f3ead2;
+          --card: #2b2315;
+          --card-foreground: #f3ead2;
+          --popover: #2b2315;
+          --popover-foreground: #f3ead2;
+          --primary: #ffbe91;
+          --primary-foreground: #4a2c12;
+          --secondary: #24384a;
+          --secondary-foreground: #cfebff;
+          --muted: #332a19;
+          --muted-foreground: #c9b892;
+          --accent: #3d2f1a;
+          --accent-foreground: #ffddb0;
+          --destructive: #e5674a;
+          --border: #3e3420;
+          --input: #3e3420;
+          --ring: #ffbe91;
         }
       `}</style>
 

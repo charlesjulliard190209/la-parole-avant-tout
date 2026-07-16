@@ -3,14 +3,14 @@
 @import "shadcn/tailwind.css";
 
 /*
-  Mode sombre piloté par la préférence système (prefers-color-scheme),
-  comme avant l'introduction de shadcn. On NE bascule PAS sur le mode `.dark`
-  par classe (défaut shadcn) : les parcours existants (discussion-anonyme,
-  organisateurs) utilisent des variantes `dark:` pilotées par l'OS et doivent
-  s'afficher comme avant (Story 4.0, AC #5).
-  Tailwind v4 mappe déjà `dark:` sur `prefers-color-scheme` par défaut,
-  donc aucun `@custom-variant dark` n'est nécessaire ici.
+  Dark mode via a `.dark` class on <html>, set by next-themes
+  (attribute="class", defaultTheme="system"): without any action from the
+  student, the OS preference applies as before (Story 4.0, AC #5); the
+  mobile-menu toggle can force light/dark (persisted in localStorage).
+  The @custom-variant makes the existing `dark:` utilities follow the class
+  (Tailwind v4 otherwise maps them to prefers-color-scheme only).
 */
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
@@ -57,34 +57,34 @@
 }
 
 /*
-  Palette « Aube » — mode clair. Validée par Fab le 2026-07-16 sur /styleguide
-  (v1), en remplacement de « Doux & rassurant ».
-  Source : Color Hunt pêche/abricot/ivoire/ciel (#FFBE91 #FFDDB0 #FFFCE1
-  #CFEBFF) + ancres foncées dérivées pour le contraste AA.
-  Signature : conversation bicolore — l'élève parle en pêche (accent),
-  l'équipe répond en bleu ciel (secondary).
+  "Aube" (dawn) palette — light mode. Validated by Fab on 2026-07-16 on
+  /styleguide (v1), replacing "Doux & rassurant".
+  Source: Color Hunt peach/apricot/ivory/sky (#FFBE91 #FFDDB0 #FFFCE1
+  #CFEBFF) + darker anchors derived for AA contrast.
+  Signature: two-tone conversation — the student speaks in peach (accent),
+  the team replies in sky blue (secondary).
 */
 :root {
-  --background: #fffce1; /* ivoire — lumière du matin */
-  --foreground: #453521; /* encre brune (≈11:1 sur ivoire) */
-  --card: #fffef7; /* blanc chaud */
+  --background: #fffce1; /* ivory — morning light */
+  --foreground: #453521; /* brown ink (≈11:1 on ivory) */
+  --card: #fffef7; /* warm white */
   --card-foreground: #453521;
   --popover: #fffef7;
   --popover-foreground: #453521;
-  --primary: #ffa766; /* pêche — CTA à texte brun foncé (≈6:1), pas de blanc sur orange */
+  --primary: #ffa766; /* peach — CTA with dark brown text (≈6:1), no white on orange */
   --primary-foreground: #50310f;
-  --secondary: #cfebff; /* bleu ciel — le calme de l'équipe */
-  --secondary-foreground: #1f4e6b; /* ardoise bleue (≈7:1 sur bleu ciel) */
-  --muted: #faf0c8; /* ivoire dense */
-  --muted-foreground: #76644a; /* brun doré — contraste AA sur ivoire et muted */
-  --accent: #ffddb0; /* abricot — survols et présence de l'élève */
+  --secondary: #cfebff; /* sky blue — the team's calm */
+  --secondary-foreground: #1f4e6b; /* blue slate (≈7:1 on sky blue) */
+  --muted: #faf0c8; /* dense ivory */
+  --muted-foreground: #76644a; /* golden brown — AA contrast on ivory and muted */
+  --accent: #ffddb0; /* apricot — hovers and the student's presence */
   --accent-foreground: #5a3a15;
-  --destructive: #c04530; /* brique douce — AA en texte sur ivoire et en fond sous blanc */
-  --border: #f0e2c0; /* sable */
-  --input: #e9d8b2; /* sable appuyé pour délimiter les champs */
-  --ring: #e1793b; /* pêche profonde — focus */
-  --radius: 0.9rem; /* arrondi large et généreux */
-  /* charts / sidebar : non utilisés dans le MVP, teintes alignées sur Aube */
+  --destructive: #c04530; /* soft brick — AA as text on ivory and as background under white */
+  --border: #f0e2c0; /* sand */
+  --input: #e9d8b2; /* stronger sand to outline fields */
+  --ring: #e1793b; /* deep peach — focus */
+  --radius: 0.9rem; /* wide, generous rounding */
+  /* charts / sidebar: unused in the MVP, tints aligned with Aube */
   --chart-1: #ffa766;
   --chart-2: #8fc4e8;
   --chart-3: #e1793b;
@@ -101,44 +101,42 @@
 }
 
 /*
-  Mode sombre « Brun de nuit » — le pendant nocturne du fond ivoire :
-  brun chaud profond, pêche lumineuse pour les actions, bulles élève en
-  abricot nuit et équipe en bleu profond. Validé avec la v1 (2026-07-16).
+  "Brun de nuit" dark mode — the nocturnal counterpart of the ivory
+  background: deep warm brown, luminous peach for actions, student bubbles in
+  night apricot and team ones in deep blue. Validated with v1 (2026-07-16).
 */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #211a10; /* brun de nuit */
-    --foreground: #f3ead2; /* ivoire doux */
-    --card: #2b2315;
-    --card-foreground: #f3ead2;
-    --popover: #2b2315;
-    --popover-foreground: #f3ead2;
-    --primary: #ffbe91; /* pêche lumineuse */
-    --primary-foreground: #4a2c12;
-    --secondary: #24384a; /* bleu profond */
-    --secondary-foreground: #cfebff;
-    --muted: #332a19;
-    --muted-foreground: #c9b892;
-    --accent: #3d2f1a; /* abricot nuit */
-    --accent-foreground: #ffddb0;
-    --destructive: #e5674a;
-    --border: #3e3420;
-    --input: #3e3420;
-    --ring: #ffbe91;
-    --chart-1: #ffbe91;
-    --chart-2: #8fc4e8;
-    --chart-3: #e1793b;
-    --chart-4: #c9b892;
-    --chart-5: #a99b7d;
-    --sidebar: #2b2315;
-    --sidebar-foreground: #f3ead2;
-    --sidebar-primary: #ffbe91;
-    --sidebar-primary-foreground: #4a2c12;
-    --sidebar-accent: #3d2f1a;
-    --sidebar-accent-foreground: #ffddb0;
-    --sidebar-border: #3e3420;
-    --sidebar-ring: #ffbe91;
-  }
+.dark {
+  --background: #211a10; /* night brown */
+  --foreground: #f3ead2; /* soft ivory */
+  --card: #2b2315;
+  --card-foreground: #f3ead2;
+  --popover: #2b2315;
+  --popover-foreground: #f3ead2;
+  --primary: #ffbe91; /* luminous peach */
+  --primary-foreground: #4a2c12;
+  --secondary: #24384a; /* deep blue */
+  --secondary-foreground: #cfebff;
+  --muted: #332a19;
+  --muted-foreground: #c9b892;
+  --accent: #3d2f1a; /* night apricot */
+  --accent-foreground: #ffddb0;
+  --destructive: #e5674a;
+  --border: #3e3420;
+  --input: #3e3420;
+  --ring: #ffbe91;
+  --chart-1: #ffbe91;
+  --chart-2: #8fc4e8;
+  --chart-3: #e1793b;
+  --chart-4: #c9b892;
+  --chart-5: #a99b7d;
+  --sidebar: #2b2315;
+  --sidebar-foreground: #f3ead2;
+  --sidebar-primary: #ffbe91;
+  --sidebar-primary-foreground: #4a2c12;
+  --sidebar-accent: #3d2f1a;
+  --sidebar-accent-foreground: #ffddb0;
+  --sidebar-border: #3e3420;
+  --sidebar-ring: #ffbe91;
 }
 
 @layer base {

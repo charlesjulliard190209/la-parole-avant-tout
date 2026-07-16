@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -16,49 +17,48 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-// Cibles de navigation.
+// Navigation targets.
 const CHAT_HREF = "/discussion-anonyme";
-// Route de la Story 4.2 : pas encore construite → 404 temporaire assumé
-// (décision Fab, 2026-07-16) jusqu'à ce que la section « camarade exclu » existe.
 const CAMARADE_HREF = "/camarade-exclu";
 
 /**
- * En-tête « révélé au scroll ».
+ * "Revealed on scroll" header.
  *
- * En haut de la page il reste masqué pour laisser le hero (logo centré + nom)
- * respirer. Dès que le logo du hero quitte le viewport (l'élève a commencé à
- * défiler), l'en-tête glisse depuis le haut : logo cliquable + navigation + CTA.
+ * At the top of the page it stays hidden so the hero (centered logo + name)
+ * can breathe. As soon as the hero logo leaves the viewport (the student
+ * started scrolling), the header slides in from the top: clickable logo +
+ * navigation + CTA.
  *
- * La détection s'appuie sur un IntersectionObserver posé sur un repère
- * (`#hero-logo-sentinel`) placé juste sous le logo du hero dans `app/page.tsx`.
- * Tant que ce repère est visible, on est « en haut » → en-tête masqué.
+ * Detection relies on an IntersectionObserver watching a sentinel
+ * (`#hero-logo-sentinel`) placed right below the hero logo in `app/page.tsx`.
+ * While that sentinel is visible, we are "at the top" → header hidden.
  *
- * `alwaysVisible` : pour les pages SANS hero ni repère (ex. `/camarade-exclu`).
- * Dans ce mode, aucun observer n'est monté et l'en-tête est affiché en
- * permanence, en flux normal (`sticky top-0`) — il pousse donc le contenu vers
- * le bas au lieu de le recouvrir, sans padding compensatoire à gérer côté page.
+ * `alwaysVisible`: for pages WITHOUT a hero or sentinel (e.g. `/camarade-exclu`).
+ * In that mode no observer is mounted and the header is shown permanently, in
+ * normal flow (`sticky top-0`) — it pushes content down instead of covering
+ * it, so pages need no compensating padding.
  */
 export function SiteHeader({
   alwaysVisible = false,
 }: {
   alwaysVisible?: boolean;
 }) {
-  // Visibilité pilotée par le scroll (mode hero). Ignorée si `alwaysVisible`.
+  // Scroll-driven visibility (hero mode). Ignored when `alwaysVisible`.
   const [scrolledVisible, setScrolledVisible] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
-    // Mode « toujours visible » : pas de repère à observer, rien à faire.
+    // "Always visible" mode: no sentinel to observe, nothing to do.
     if (alwaysVisible) return;
 
     const sentinel = document.getElementById("hero-logo-sentinel");
-    // Sécurité : sans repère (ex. structure de page modifiée), on garde
-    // l'en-tête masqué plutôt que de l'afficher en permanence.
+    // Safety: without a sentinel (e.g. page structure changed), keep the
+    // header hidden rather than showing it permanently.
     if (!sentinel) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Repère hors du viewport (défilé vers le bas) → on affiche l'en-tête.
+        // Sentinel out of the viewport (scrolled down) → show the header.
         setScrolledVisible(!entry.isIntersecting);
       },
       { threshold: 0 }
@@ -73,15 +73,15 @@ export function SiteHeader({
   return (
     <header
       aria-hidden={!visible}
-      // `inert` quand masqué : retire l'en-tête du parcours clavier ET des
-      // technologies d'assistance (les liens/boutons ne sont plus focusables
-      // tant que l'en-tête est hors écran). `pointer-events-none` ne suffit pas
-      // (il ne bloque que la souris).
+      // `inert` while hidden: removes the header from the keyboard flow AND
+      // from assistive technologies (links/buttons are no longer focusable
+      // while the header is off-screen). `pointer-events-none` is not enough
+      // (it only blocks the mouse).
       inert={!visible}
       className={cn(
         "z-50 border-b border-border bg-background/90 backdrop-blur transition-all duration-300",
-        // Mode hero : en-tête `fixed` révélé au scroll. Mode `alwaysVisible` :
-        // `sticky` en flux normal, toujours affiché.
+        // Hero mode: `fixed` header revealed on scroll. `alwaysVisible` mode:
+        // `sticky` in normal flow, always shown.
         alwaysVisible
           ? "sticky top-0 translate-y-0 opacity-100"
           : cn(
@@ -113,14 +113,20 @@ export function SiteHeader({
           >
             Aider un camarade
           </Link>
-          <Button asChild size="lg" className="h-10 px-5 text-sm">
-            <Link href={CHAT_HREF}>Parler à quelqu&apos;un</Link>
-          </Button>
+          {/* CTA hidden on the chat page itself: a "Parler à quelqu'un"
+              button that reloads the page you are already on is confusing
+              (Fab's decision, 2026-07-16). The text link stays — flagged as
+              the current page via aria-current. */}
+          {pathname !== CHAT_HREF && (
+            <Button asChild size="lg" className="h-10 px-5 text-sm">
+              <Link href={CHAT_HREF}>Parler à quelqu&apos;un</Link>
+            </Button>
+          )}
 
-          {/* Menu mobile : sous `sm`, les liens texte ci-dessus sont masqués —
-              sans ce menu, « Aider un camarade » serait inatteignable sur
-              téléphone. Panneau latéral (Sheet, fondation 4.0) ouvert par un
-              bouton hamburger, fermé automatiquement au choix d'un lien. */}
+          {/* Mobile menu: below `sm`, the text links above are hidden —
+              without this menu, "Aider un camarade" would be unreachable on
+              a phone. Side panel (Sheet, foundation 4.0) opened by a
+              hamburger button, closed automatically when a link is chosen. */}
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -155,6 +161,14 @@ export function SiteHeader({
                     Aider un camarade
                   </Link>
                 </SheetClose>
+
+                {/* Light/dark toggle — deliberately kept to the mobile menu
+                    only (no desktop toggle, Fab's decision 2026-07-16).
+                    Outside SheetClose: the panel stays open so the theme
+                    change can be seen applying. */}
+                <div className="mt-2 border-t border-border pt-2">
+                  <ThemeToggle />
+                </div>
               </nav>
             </SheetContent>
           </Sheet>

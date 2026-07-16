@@ -1,7 +1,9 @@
-import { BookmarkIcon, HourglassIcon, KeyRoundIcon } from "lucide-react";
+import { ArrowLeftIcon, BookmarkIcon, HourglassIcon, KeyRoundIcon } from "lucide-react";
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -40,11 +42,16 @@ export default async function DiscussionAnonymePage({
     redirect("/discussion-anonyme");
   }
 
-  // Atterrissage "à froid" (ni etape=pret ni conv dans l'URL) : cherche une
-  // Conversation "Sauvegarder" retrouvée par cookie avant d'afficher la
-  // divulgation/choix de mode (FR-2). Aucune correspondance ou pas de cookie
-  // → parcours normal, sans erreur (AC #2, #3).
-  if (!etapePrete && !conversationId && !erreurEphemere) {
+  // "Cold" landing (neither etape=pret nor conv in the URL): look for a
+  // "Sauvegarder" Conversation recoverable via cookie before showing the
+  // disclosure/mode choice (FR-2). No match or no cookie → normal flow,
+  // without an error (AC #2, #3).
+  // etape=choix = deliberate return from a conversation: without this
+  // exception, the "Sauvegarder" cookie would immediately redirect back to
+  // the conversation and the back button would loop.
+  const retourAuChoix = etapeParam === "choix";
+
+  if (!etapePrete && !conversationId && !erreurEphemere && !retourAuChoix) {
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
@@ -61,9 +68,9 @@ export default async function DiscussionAnonymePage({
   let messages: Message[] = [];
 
   if (etapePrete && conversationId) {
-    // Comme findConversationBySessionToken (Task 1), un incident Supabase
-    // transitoire ici ne doit jamais faire planter la page (NFR-2) — traité
-    // comme un conv introuvable, même garde-fou que la ligne absente.
+    // Like findConversationBySessionToken (Task 1), a transient Supabase
+    // incident here must never crash the page (NFR-2) — treated as a
+    // not-found conv, same guard as a missing row.
     let conversation: {
       id: string;
       is_ephemeral: boolean;
@@ -86,10 +93,10 @@ export default async function DiscussionAnonymePage({
       redirect("/discussion-anonyme");
     }
 
-    // Une Conversation "Sauvegarder" ne s'affiche que pour le cookie qui lui
-    // correspond — sinon un conv deviné/copié dans l'URL exposerait les
-    // messages d'un autre élève (AC #5). Le mode Éphémère n'a par
-    // construction aucun cookie à vérifier (AD-5, AC #6).
+    // A "Sauvegarder" Conversation is only shown to the cookie that matches
+    // it — otherwise a guessed/copied conv in the URL would expose another
+    // student's messages (AC #5). The ephemeral mode, by construction, has
+    // no cookie to check (AD-5, AC #6).
     if (!conversation.is_ephemeral) {
       const cookieStore = await cookies();
       const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
@@ -119,96 +126,117 @@ export default async function DiscussionAnonymePage({
   }
 
   return (
-    <main className="flex flex-1 flex-col items-center bg-background px-4 py-10 sm:py-16">
-      <div className="w-full max-w-xl rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
-        <h1 className="font-heading text-2xl font-bold text-foreground">
-          Discussion anonyme
-        </h1>
+    <>
+      {/* Always-visible header (back to home, navigation): no hero and no
+          `#hero-logo-sentinel` sentinel here — same pattern as
+          /camarade-exclu. Rendered OUTSIDE <main> to keep the "banner"
+          landmark role. */}
+      <SiteHeader alwaysVisible />
 
-        <div className="mt-4 space-y-4 text-base leading-7 text-muted-foreground">
-          <p>
-            Tu peux écrire ici sans donner ton nom, ton email, ni rien qui
-            permette de te reconnaître. Une vraie personne du lycée va lire ce
-            que tu écris et te répondre — pas un robot.
-          </p>
-        </div>
+      <main className="flex flex-1 flex-col items-center bg-background px-4 py-10 sm:py-16">
+        <div className="w-full max-w-xl rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+          <h1 className="font-heading text-2xl font-bold text-foreground">
+            Discussion anonyme
+          </h1>
 
-        {etapePrete && conversationId ? (
-          <div className="mt-6 flex flex-col gap-4">
-            <ConversationThread messages={messages} />
-            <MessageForm conversationId={conversationId} />
-          </div>
-        ) : (
-          <div className="mt-6 flex flex-col gap-4">
-            <p className="text-sm text-muted-foreground">
-              Avant de commencer, choisis comment tu veux discuter :
+          <div className="mt-4 space-y-4 text-base leading-7 text-muted-foreground">
+            <p>
+              Tu peux écrire ici sans donner ton nom, ton email, ni rien qui
+              permette de te reconnaître. Une vraie personne du lycée va lire ce
+              que tu écris et te répondre — pas un robot.
             </p>
-
-            {erreurEphemere && (
-              <p role="alert" className="text-sm font-medium text-destructive">
-                Une erreur est survenue pendant la création de ta
-                conversation. Réessaie.
-              </p>
-            )}
-
-            {/*
-              The three modes as tabs: stacked forms were unreadable on
-              mobile. Icons hide below `sm` so the three labels fit on a
-              phone-width TabsList.
-            */}
-            <Tabs defaultValue="sauvegarder">
-              <TabsList>
-                <TabsTrigger value="sauvegarder">
-                  <BookmarkIcon aria-hidden className="hidden sm:block" />
-                  Sauvegarder
-                </TabsTrigger>
-                <TabsTrigger value="code">
-                  <KeyRoundIcon aria-hidden className="hidden sm:block" />
-                  Mon Code
-                </TabsTrigger>
-                <TabsTrigger value="ephemere">
-                  <HourglassIcon aria-hidden className="hidden sm:block" />
-                  Éphémère
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="sauvegarder">
-                <ModeChoiceSauvegarder />
-              </TabsContent>
-
-              <TabsContent value="code">
-                <RecoveryForm />
-              </TabsContent>
-
-              <TabsContent value="ephemere">
-                <form
-                  action={choisirModeEphemere}
-                  className="flex flex-col gap-4"
-                >
-                  <p className="text-sm text-muted-foreground">
-                    Rien n&apos;est sauvegardé : pas de Code, pas de cookie.
-                  </p>
-                  <div className="flex flex-col gap-2 rounded-lg border border-accent bg-accent/50 p-3 text-sm font-medium text-accent-foreground">
-                    <p>
-                      Attention : tu ne pourras pas revenir plus tard lire une
-                      réponse.
-                    </p>
-                    <p>
-                      Ne partage jamais le lien de cette page une fois ta
-                      conversation commencée, et ne le mets pas dans tes
-                      favoris : n&apos;importe qui l&apos;ayant pourrait écrire
-                      à ta place.
-                    </p>
-                  </div>
-                  <Button type="submit" variant="outline" className="w-full">
-                    Continuer en éphémère
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
           </div>
-        )}
-      </div>
-    </main>
+
+          {etapePrete && conversationId ? (
+            <div className="mt-6 flex flex-col gap-4">
+              <div>
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="sm"
+                  className="-ml-2 text-muted-foreground"
+                >
+                  <Link href="/discussion-anonyme?etape=choix">
+                    <ArrowLeftIcon aria-hidden />
+                    Retour au choix du mode
+                  </Link>
+                </Button>
+              </div>
+              <ConversationThread messages={messages} />
+              <MessageForm conversationId={conversationId} />
+            </div>
+          ) : (
+            <div className="mt-6 flex flex-col gap-4">
+              <p className="text-sm text-muted-foreground">
+                Avant de commencer, choisis comment tu veux discuter :
+              </p>
+
+              {erreurEphemere && (
+                <p role="alert" className="text-sm font-medium text-destructive">
+                  Une erreur est survenue pendant la création de ta
+                  conversation. Réessaie.
+                </p>
+              )}
+
+              {/*
+                The three modes as tabs: stacked forms were unreadable on
+                mobile. Icons hide below `sm` so the three labels fit on a
+                phone-width TabsList.
+              */}
+              <Tabs defaultValue="sauvegarder">
+                <TabsList>
+                  <TabsTrigger value="sauvegarder">
+                    <BookmarkIcon aria-hidden className="hidden sm:block" />
+                    Sauvegarder
+                  </TabsTrigger>
+                  <TabsTrigger value="code">
+                    <KeyRoundIcon aria-hidden className="hidden sm:block" />
+                    Mon Code
+                  </TabsTrigger>
+                  <TabsTrigger value="ephemere">
+                    <HourglassIcon aria-hidden className="hidden sm:block" />
+                    Éphémère
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="sauvegarder">
+                  <ModeChoiceSauvegarder />
+                </TabsContent>
+
+                <TabsContent value="code">
+                  <RecoveryForm />
+                </TabsContent>
+
+                <TabsContent value="ephemere">
+                  <form
+                    action={choisirModeEphemere}
+                    className="flex flex-col gap-4"
+                  >
+                    <p className="text-sm text-muted-foreground">
+                      Rien n&apos;est sauvegardé : pas de Code, pas de cookie.
+                    </p>
+                    <div className="flex flex-col gap-2 rounded-lg border border-accent bg-accent/50 p-3 text-sm font-medium text-accent-foreground">
+                      <p>
+                        Attention : tu ne pourras pas revenir plus tard lire une
+                        réponse.
+                      </p>
+                      <p>
+                        Ne partage jamais le lien de cette page une fois ta
+                        conversation commencée, et ne le mets pas dans tes
+                        favoris : n&apos;importe qui l&apos;ayant pourrait écrire
+                        à ta place.
+                      </p>
+                    </div>
+                    <Button type="submit" variant="outline" className="w-full">
+                      Continuer en éphémère
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            </div>
+          )}
+        </div>
+      </main>
+    </>
   );
 }
