@@ -17,6 +17,7 @@ import {
 } from "@/lib/session";
 import { getAccuseReceptionAleatoire } from "@/lib/accuse-reception";
 import { containsDangerSignal } from "@/lib/danger-keywords";
+import { notifierNouveauMessage } from "@/lib/telegram";
 
 export type ChoisirModeSauvegarderState = {
   error: string | null;
@@ -215,6 +216,14 @@ export async function envoyerMessage(
         }
       });
     }
+
+    // FR-7/FR-10 (Story 3.4) : notification Telegram différée via after(),
+    // inconditionnelle (pas seulement sur signalDanger) — un seul mécanisme
+    // notifie toujours les deux Organisateurs, prioritaire ou non (AD-7,
+    // jamais deux chemins de code séparés "normal"/"urgence"). Réutilise
+    // signalDanger déjà calculé plus haut plutôt que de requêter is_priority
+    // à nouveau, pour éviter toute course avec l'after() ci-dessus.
+    after(() => notifierNouveauMessage(conversationId, signalDanger));
 
     return { error: null, accuse: getAccuseReceptionAleatoire() };
   } catch (error) {

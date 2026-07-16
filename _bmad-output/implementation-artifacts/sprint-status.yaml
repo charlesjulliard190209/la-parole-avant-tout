@@ -41,7 +41,7 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 2026-07-08
-last_updated: 2026-07-16 (Story 4.2 section deuxieme profil : review, checkpoint editorial Charles en attente)
+last_updated: 2026-07-16 (Story 4.2 en review, checkpoint editorial Charles en attente ; Story 3.5 implémentée via dev-story, en review)
 project: la-parole-contre-tous
 project_key: NOKEY
 tracking_system: file-system
@@ -63,11 +63,11 @@ development_status:
   epic-2-retrospective: optional
 
   epic-3: in-progress
-  3-1-authentification-des-organisateurs: review
-  3-2-consultation-des-conversations: backlog
-  3-3-reponse-a-une-conversation: backlog
-  3-4-notification-instantanee-sur-nouveau-message-et-notification-double-en-cas-de-priorite: backlog
-  3-5-relance-automatique-en-cas-de-non-lecture-dun-message-prioritaire: backlog
+  3-1-authentification-des-organisateurs: done
+  3-2-consultation-des-conversations: done
+  3-3-reponse-a-une-conversation: done
+  3-4-notification-instantanee-sur-nouveau-message-et-notification-double-en-cas-de-priorite: done
+  3-5-relance-automatique-en-cas-de-non-lecture-dun-message-prioritaire: review
   epic-3-retrospective: optional
 
   epic-4: in-progress
@@ -82,7 +82,7 @@ action_items:
     owner: "Charles / John (PM)"
     status: done
     resolution: "2026-07-10 : FR-10 reformule dans le PRD (alerte silencieuse), AD-6 complete dans l'Architecture Spine, AC de la Story 2.2 reecrite dans epics.md. Fait en meme temps que l'action item epic 2 ci-dessous (les deux decisions se recoupent)."
-  - epic: 2
+  - epic: 
     action: "Decision de Charles (2026-07-10) : le bandeau permanent de numeros d'urgence (FR-8, Story 2.1) est annule - l'eleve ne doit voir aucun numero d'urgence nulle part dans le chat, meme hors detection. Code de la Story 2.1 reverte (emergency-banner.tsx supprime, page.tsx revert). A mettre a jour : FR-8/NFR-3 (PRD), Story 2.1 (epics.md), Capability Map FR-8 (Architecture Spine). Impact produit a noter : le filet de securite automatique du PRD (Vision SS1, 'numeros d'urgence automatiques + escalade humaine') perd son premier etage ; seule l'escalade humaine (FR-11) reste comme filet apres detection silencieuse (FR-10, deja en cours de refonte)."
     owner: "Charles / John (PM)"
     status: done
