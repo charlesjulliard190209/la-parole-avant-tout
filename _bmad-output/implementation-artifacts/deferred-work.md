@@ -1,5 +1,13 @@
 # Deferred Work
 
+## Deferred from: code review of 4-2-section-dediee-au-deuxieme-profil (2026-07-16)
+
+- `prefers-reduced-motion` lu une seule fois au montage dans `components/reveal.tsx:56` (pas d'écouteur `change`) : basculer la préférence en cours de session n'est pas pris en compte avant rechargement. Pré-existant (composant 4.1, hors diff de cette story) — déjà noté à la revue 4.1, re-signalé ici pour mémoire.
+- `Sheet` mobile (`components/site-header.tsx:125-161`) laissé ouvert au franchissement du breakpoint `sm` (rotation, resize, zoom) : le trigger hamburger devient `sm:hidden`, donc à la fermeture Radix ne retrouve pas la cible de focus et celui-ci peut retomber sur `<body>`. Edge rare (menu ouvert + resize) — aucun `onOpenChange`/garde media pour refermer au changement de breakpoint.
+- Constantes de routes (`/discussion-anonyme`, `/camarade-exclu`) désormais dupliquées sur 3 fichiers (`components/site-header.tsx:20`, `app/camarade-exclu/page.tsx:17`, `app/page.tsx`) : un renommage peut désync silencieusement une des occurrences. Dette pré-existante (pattern déjà présent avant cette story) — à centraliser (`lib/routes.ts`) quand cela vaudra le coup.
+- Footer dupliqué verbatim entre `app/camarade-exclu/page.tsx:161-174` et l'accueil, avec l'année `© 2026` codée en dur : divergence possible (lien légal, passage 2027). Candidat à un composant `SiteFooter` partagé — reporté, cohérent avec la duplication assumée à cette échelle (NFR-1).
+- `priority` sur l'image intro (`app/camarade-exclu/page.tsx:83`) alors qu'en mobile la mise en page est texte-first (le `<h1>` est vraisemblablement le LCP) : le JPEG préchargé entre en concurrence avec les fonts/titre. Perf discutable (l'image est au-dessus de la ligne de flottaison en desktop) — à mesurer avant de retirer `priority`.
+
 ## Deferred from: code review of 4-1-point-dentree-clair-vers-le-chat (2026-07-16)
 
 - `prefers-reduced-motion` lu une seule fois au montage dans `components/reveal.tsx:56` (pas d'écouteur `change`) : un utilisateur qui bascule la préférence en cours de session ne la voit pas prise en compte avant rechargement. Amélioration mineure — à traiter dans un futur passage a11y.
