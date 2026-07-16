@@ -4,7 +4,7 @@ baseline_commit: 8d3158cafedac2d25b3201280c5dbefcbc9ffd28
 
 # Story 3.1: Authentification des organisateurs
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
