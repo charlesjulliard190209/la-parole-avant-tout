@@ -1,5 +1,13 @@
 # Deferred Work
 
+## Deferred from: code review of 4-1-point-dentree-clair-vers-le-chat (2026-07-16)
+
+- `prefers-reduced-motion` lu une seule fois au montage dans `components/reveal.tsx:56` (pas d'écouteur `change`) : un utilisateur qui bascule la préférence en cours de session ne la voit pas prise en compte avant rechargement. Amélioration mineure — à traiter dans un futur passage a11y.
+- Constantes `CHAT_HREF` / `CTA_LABEL` dupliquées entre `app/page.tsx` et `components/site-header.tsx` : risque de divergence silencieuse d'URL/libellé. À centraliser (ex. `lib/site.ts`) — reporté (mineur, 2 constantes, cohérent NFR-1 pour l'instant).
+- Nav secondaire du header (`Discussion anonyme`, `Aider un camarade`) en `hidden ... sm:inline` + dépendante du JS : inatteignable < 640px et sans JS. Mitigé : le CTA chat reste atteignable via le hero rendu serveur. À revoir quand la nav aura plusieurs destinations publiques (Story 4.2).
+- En-tête `fixed` sans `scroll-padding-top` correspondant : sans impact aujourd'hui (aucune ancre interne), mais tout futur lien d'ancrage/retour de focus serait masqué sous l'en-tête. Préventif.
+- Si le contenu tient sans défilement (grand écran / zoom arrière), le sentinel `#hero-logo-sentinel` reste intersecté et l'en-tête n'est jamais révélé. Cas rare sur une landing — reporté.
+
 ## Deferred from: code review of 2-3-procedure-descalade-humaine-documentee (2026-07-10)
 
 - Signal de danger concernant un tiers (pas l'Élève lui-même) non couvert par la procédure d'escalade (`docs/procedure-escalade-cpe-counsellor.md`) — FR-9 définit le Signal de danger uniquement autour des idées suicidaires/de l'automutilation de l'Élève lui-même ; un message décrivant un danger venant d'un tiers (ex. maltraitance en cours) est une classe d'escalade différente non couverte. Extension de périmètre à trancher au niveau produit (FR-9), pas dans cette story.
