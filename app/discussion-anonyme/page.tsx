@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { choisirModeEphemere } from "./actions";
 import { AutoRefresh } from "./auto-refresh";
+import { ChatScroll } from "./chat-scroll";
 import { ConversationThread, type Message } from "./conversation-thread";
 import { MessageForm } from "./message-form";
 import { ModeChoiceSauvegarder } from "./mode-choice";
@@ -188,6 +189,65 @@ export default async function DiscussionAnonymePage({
     }
   }
 
+  // Conversation view: classic full-screen chat layout (Fab, 2026-07-17).
+  // `data-chat-fullscreen` locks the page to the viewport height (see
+  // globals.css): the feed scrolls internally and the form never leaves the
+  // bottom of the screen. The intro paragraph stays on the mode-choice view
+  // only — in the chat itself a compact header (back + title) is enough for
+  // the student to know where they are.
+  if (etapePrete && conversationId) {
+    return (
+      <>
+        <SiteHeader alwaysVisible />
+
+        <main
+          data-chat-fullscreen
+          className="flex min-h-0 flex-1 flex-col items-center bg-background px-4 py-4 sm:py-6"
+        >
+          <div className="flex min-h-0 w-full max-w-xl flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+              <Button
+                asChild
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground"
+              >
+                <Link href="/discussion-anonyme?etape=choix">
+                  <ArrowLeftIcon aria-hidden />
+                  <span className="sr-only">Retour au choix du mode</span>
+                </Link>
+              </Button>
+              <h1 className="font-heading text-lg font-bold text-foreground">
+                Discussion anonyme
+              </h1>
+            </div>
+
+            <AutoRefresh />
+            <ChatScroll messageCount={messages.length}>
+              {/* Process explainer at the top of the FEED, not of the card:
+                  it scrolls away as messages pile up (the chat stays a chat)
+                  but remains readable by scrolling back to the beginning of
+                  the conversation (Fab, 2026-07-17). */}
+              <p className="mb-4 rounded-xl bg-muted/60 p-4 text-center text-sm leading-6 text-muted-foreground">
+                Tu peux écrire ici sans donner ton nom, ton email, ni rien qui
+                permette de te reconnaître. Une vraie personne du lycée va lire
+                ce que tu écris et te répondre — pas un robot.
+              </p>
+              <ConversationThread
+                messages={messages}
+                lastOrganizerReadAt={lastOrganizerReadAt}
+              />
+            </ChatScroll>
+
+            <div className="border-t border-border p-3 sm:p-4">
+              <MessageForm conversationId={conversationId} />
+            </div>
+          </div>
+        </main>
+      </>
+    );
+  }
+
   return (
     <>
       {/* Always-visible header (back to home, navigation): no hero and no
@@ -210,29 +270,7 @@ export default async function DiscussionAnonymePage({
             </p>
           </div>
 
-          {etapePrete && conversationId ? (
-            <div className="mt-6 flex flex-col gap-4">
-              <AutoRefresh />
-              <div>
-                <Button
-                  asChild
-                  variant="ghost"
-                  size="sm"
-                  className="-ml-2 text-muted-foreground"
-                >
-                  <Link href="/discussion-anonyme?etape=choix">
-                    <ArrowLeftIcon aria-hidden />
-                    Retour au choix du mode
-                  </Link>
-                </Button>
-              </div>
-              <ConversationThread
-                messages={messages}
-                lastOrganizerReadAt={lastOrganizerReadAt}
-              />
-              <MessageForm conversationId={conversationId} />
-            </div>
-          ) : (
+          {(
             <div className="mt-6 flex flex-col gap-4">
               <p className="text-sm text-muted-foreground">
                 Avant de commencer, choisis comment tu veux discuter :
