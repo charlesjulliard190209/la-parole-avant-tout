@@ -5,6 +5,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { estArchivee } from "@/lib/conversation-archive";
 import { marquerLu } from "../actions";
 import { AutoRefresh } from "./auto-refresh";
+import { ChatScroll } from "./chat-scroll";
 import { ConversationActions } from "./conversation-actions";
 import { ConversationThread, type Message } from "./conversation-thread";
 import { ReplyForm } from "./reply-form";
@@ -151,59 +152,76 @@ export default async function ConversationDetailPage({
     await marquerLu(conversationId);
   }
 
+  // Layout de chat plein écran (même principe que /discussion-anonyme, Fab
+  // 2026-07-17) : `data-chat-fullscreen` verrouille la page à la hauteur du
+  // viewport (voir globals.css). L'en-tête (titre, retour, badges, actions) et
+  // le formulaire de réponse restent fixes ; seul le fil de messages défile en
+  // interne, comme une app de messagerie.
   return (
-    <main className="flex flex-1 flex-col items-center bg-zinc-50 px-4 py-10 dark:bg-black sm:py-16">
-      <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-sm dark:bg-zinc-900 sm:p-8">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-            Conversation
-          </h1>
+    <main
+      data-chat-fullscreen
+      className="flex min-h-0 flex-1 flex-col items-center bg-zinc-50 px-4 py-4 dark:bg-black sm:py-6"
+    >
+      <div className="flex min-h-0 w-full max-w-xl flex-1 flex-col overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-zinc-900">
+        {/* En-tête fixe */}
+        <div className="border-b border-zinc-200 p-4 dark:border-zinc-800">
+          <div className="flex items-center justify-between gap-2">
+            <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+              Conversation
+            </h1>
 
-          <Link
-            href="/organisateurs"
-            className="text-sm text-zinc-600 underline dark:text-zinc-400"
-          >
-            ← Retour à la liste
-          </Link>
+            <Link
+              href="/organisateurs"
+              className="text-sm text-zinc-600 underline dark:text-zinc-400"
+            >
+              ← Retour à la liste
+            </Link>
+          </div>
+
+          {(conversation.is_priority || conversation.is_ephemeral) && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {conversation.is_priority && (
+                <span className="rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">
+                  Prioritaire
+                </span>
+              )}
+              {conversation.is_ephemeral && (
+                <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Éphémère
+                </span>
+              )}
+            </div>
+          )}
+
+          <ConversationActions
+            conversationId={conversationId}
+            isPriority={conversation.is_priority}
+            isArchived={estArchivee(archivedAt)}
+          />
+
+          {erreurMessages && (
+            <p
+              role="alert"
+              className="mt-2 text-sm text-red-600 dark:text-red-400"
+            >
+              Erreur de chargement des messages. Réessaie dans quelques
+              instants.
+            </p>
+          )}
         </div>
 
-        {(conversation.is_priority || conversation.is_ephemeral) && (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {conversation.is_priority && (
-              <span className="rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">
-                Prioritaire
-              </span>
-            )}
-            {conversation.is_ephemeral && (
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                Éphémère
-              </span>
-            )}
-          </div>
-        )}
-
-        <ConversationActions
-          conversationId={conversationId}
-          isPriority={conversation.is_priority}
-          isArchived={estArchivee(archivedAt)}
-        />
-
-        {erreurMessages && (
-          <p
-            role="alert"
-            className="mt-4 text-sm text-red-600 dark:text-red-400"
-          >
-            Erreur de chargement des messages. Réessaie dans quelques
-            instants.
-          </p>
-        )}
-
         <AutoRefresh />
-        <div className="mt-6 space-y-4">
+
+        {/* Fil scrollable */}
+        <ChatScroll messageCount={messages.length}>
           <ConversationThread
             messages={messages}
             lastStudentReadAt={lastStudentReadAt}
           />
+        </ChatScroll>
+
+        {/* Formulaire de réponse fixé en bas */}
+        <div className="border-t border-zinc-200 p-3 dark:border-zinc-800 sm:p-4">
           <ReplyForm conversationId={conversationId} />
         </div>
       </div>

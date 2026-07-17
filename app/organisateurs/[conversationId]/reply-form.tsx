@@ -1,10 +1,20 @@
 "use client";
 
+import { SendIcon } from "lucide-react";
 import { useActionState, useEffect, useRef } from "react";
+
+import { Button } from "@/components/ui/button";
+
 import { repondre, type RepondreState } from "../actions";
 
 const initialState: RepondreState = { error: null, success: false };
 
+/*
+  Input de réponse compact façon messagerie, pinné en bas du layout de chat
+  plein écran par la page. Même ergonomie que le MessageForm côté élève :
+  textarea compacte + bouton d'envoi à droite ; Entrée envoie, Maj+Entrée
+  insère un retour à la ligne.
+*/
 export function ReplyForm({ conversationId }: { conversationId: string }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, isPending] = useActionState(
@@ -19,16 +29,9 @@ export function ReplyForm({ conversationId }: { conversationId: string }) {
   }, [state]);
 
   return (
-    <form
-      ref={formRef}
-      action={formAction}
-      className="space-y-3 rounded-xl border border-zinc-200 p-4 dark:border-zinc-700"
-    >
-      <div>
-        <label
-          className="block text-sm text-zinc-700 dark:text-zinc-300"
-          htmlFor="message"
-        >
+    <div className="flex flex-col gap-2">
+      <form ref={formRef} action={formAction} className="flex items-end gap-2">
+        <label htmlFor="message" className="sr-only">
           Ta réponse
         </label>
         <textarea
@@ -36,24 +39,33 @@ export function ReplyForm({ conversationId }: { conversationId: string }) {
           name="message"
           required
           maxLength={4000}
-          rows={4}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-base text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-50"
+          rows={2}
+          placeholder="Écris ta réponse…"
+          className="min-h-0 flex-1 resize-none rounded-lg border border-zinc-300 px-3 py-2 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder:text-zinc-500"
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey && !isPending) {
+              event.preventDefault();
+              // requestSubmit (et non submit()) pour que la validation
+              // `required` du navigateur s'exécute avant la Server Action.
+              formRef.current?.requestSubmit();
+            }
+          }}
         />
-      </div>
+        <Button
+          type="submit"
+          size="icon"
+          disabled={isPending}
+          aria-label={isPending ? "Envoi en cours" : "Envoyer la réponse"}
+        >
+          <SendIcon aria-hidden />
+        </Button>
+      </form>
 
       {state.error && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">
           {state.error}
         </p>
       )}
-
-      <button
-        type="submit"
-        disabled={isPending}
-        className="w-full rounded-lg bg-zinc-900 px-4 py-2 text-white disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
-      >
-        {isPending ? "Envoi…" : "Envoyer la réponse"}
-      </button>
-    </form>
+    </div>
   );
 }
