@@ -9,16 +9,15 @@ export type Message = {
 // mêmes messages, labels inversés (point de vue Organisateur, pas Élève).
 // Dupliqué plutôt que partagé via un prop de labels — cohérent avec la
 // préférence déjà actée dans ce projet pour la duplication à cette échelle.
+import { formaterHorodatageMessage } from "@/lib/format-message-date";
+
 // Same WhatsApp-style receipt as the student side (duplicated on purpose,
 // see comment above): ✓ = stored, ✓✓ = the student has displayed the thread
-// since this reply was sent.
+// since this reply was sent. Inline (span) : affiché dans la ligne de pied de
+// bulle, à côté de l'horodatage.
 function AccuseLecture({ lu }: { lu: boolean }) {
   return (
-    <span
-      className="mt-1 block text-right text-[11px] leading-none text-zinc-500 dark:text-zinc-400"
-      title={lu ? "Lu" : "Reçu"}
-      aria-label={lu ? "Lu" : "Reçu"}
-    >
+    <span title={lu ? "Lu" : "Reçu"} aria-label={lu ? "Lu" : "Reçu"}>
       {lu ? "✓✓" : "✓"}
     </span>
   );
@@ -54,15 +53,23 @@ export function ConversationThread({
               {estEleve ? "Élève" : "Toi"}
             </p>
             <p className="whitespace-pre-wrap">{message.body}</p>
-            {!estEleve && (
-              <AccuseLecture
-                lu={
-                  !!lastStudentReadAt &&
-                  Date.parse(message.created_at) <=
-                    Date.parse(lastStudentReadAt)
-                }
-              />
-            )}
+
+            {/* Pied de bulle discret : horodatage (+ accusé de lecture pour les
+                réponses de l'Organisateur), aligné à droite. */}
+            <div className="mt-1 flex items-center justify-end gap-1.5 text-[11px] leading-none text-zinc-500 dark:text-zinc-400">
+              <time dateTime={message.created_at}>
+                {formaterHorodatageMessage(message.created_at)}
+              </time>
+              {!estEleve && (
+                <AccuseLecture
+                  lu={
+                    !!lastStudentReadAt &&
+                    Date.parse(message.created_at) <=
+                      Date.parse(lastStudentReadAt)
+                  }
+                />
+              )}
+            </div>
           </div>
         );
       })}
