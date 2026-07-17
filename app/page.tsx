@@ -29,15 +29,14 @@ export default function Home() {
             ligne de flottaison (mobile et desktop). */}
         <section className="mx-auto flex w-full max-w-3xl flex-col items-center gap-6 px-6 pb-16 pt-16 text-center sm:pt-24">
           {/* Logo décoratif ici : le nom du site est repris juste en dessous en
-              texte, inutile de le faire annoncer deux fois par les lecteurs d'écran. */}
+              texte (visuellement masqué pour éviter le doublon), inutile de le
+              faire annoncer deux fois par les lecteurs d'écran. */}
           <Logo aria-hidden="true" className="h-24 w-auto sm:h-28" />
           {/* Repère observé par SiteHeader : tant qu'il est visible, on est « en
               haut » (en-tête masqué). Dès qu'il passe au-dessus du viewport
               (logo défilé), l'en-tête apparaît. */}
           <div id="hero-logo-sentinel" aria-hidden="true" className="h-px w-px" />
-          <h1 className="font-heading text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
-            La Parole Avant Tout
-          </h1>
+          <h1 className="sr-only">La Parole Avant Tout</h1>
           <p className="max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
             Nous sommes deux élèves du Lycée Français Charles de Gaulle, engagés
             contre le harcèlement scolaire. Ici, tu as un espace de parole
