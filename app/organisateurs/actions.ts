@@ -149,3 +149,99 @@ export async function marquerLu(conversationId: string): Promise<void> {
     }
   });
 }
+
+// État partagé des actions de gestion (priorité, archivage) déclenchées
+// depuis la page conversation via useActionState — un simple message
+// d'erreur affichable, null si l'action a réussi.
+export type GestionConversationState = {
+  error: string | null;
+};
+
+const ERREUR_GENERIQUE_GESTION =
+  "Action impossible pour l'instant. Réessaie dans quelques instants.";
+// Message distinct quand la colonne archived_at n'existe pas encore (migration
+// 20260717000000 non appliquée) : évite de laisser croire à un bug alors qu'il
+// suffit d'appliquer la migration côté Supabase.
+const ERREUR_MIGRATION_ARCHIVAGE =
+  "L'archivage n'est pas encore actif (migration à appliquer côté Supabase).";
+
+// Priorisation/dépriorisation manuelle (rattrape ce que le moteur de détection
+// a raté, ou retire une fausse détection). L'état cible transite par le champ
+// caché `prioritaire` du formulaire (même convention bind(conversationId) +
+// FormData que repondre). Vérifie elle-même l'authentification (AD-3). Rappel :
+// le moteur repriorise toujours au prochain Signal de danger — une
+// dépriorisation manuelle n'est donc jamais définitive (choix produit assumé,
+// 2026-07-17).
+export async function basculerPriorite(
+  conversationId: string,
+  _prevState: GestionConversationState,
+  formData: FormData
+): Promise<GestionConversationState> {
+  await requireOrganisateur();
+
+  const prioritaire = formData.get("prioritaire") === "true";
+
+  const { error } = await supabaseServer
+    .from("conversations")
+    .update({ is_priority: prioritaire })
+    .eq("id", conversationId);
+
+  if (error) {
+    console.error(
+      "Échec de la mise à jour is_priority (basculerPriorite) :",
+      conversationId,
+      error.message
+    );
+    return { error: ERREUR_GENERIQUE_GESTION };
+  }
+
+  // Les deux vues dépendent de is_priority : la conversation (badge) et la
+  // liste (onglet Prioritaires + compteurs).
+  revalidatePath(`/organisateurs/${conversationId}`);
+  revalidatePath("/organisateurs");
+
+  return { error: null };
+}
+
+// Archive / désarchive une conversation. L'état cible transite par le champ
+// caché `archiver` du formulaire ("true" = ranger dans « Archivées », sinon la
+// remettre active). Archiver est une clôture volontaire ; un nouveau message
+// élève rouvre aussi la conversation automatiquement (voir envoyerMessage).
+// Tolère l'absence de la colonne archived_at : renvoie alors un message
+// explicite plutôt qu'une erreur générique.
+export async function basculerArchivage(
+  conversationId: string,
+  _prevState: GestionConversationState,
+  formData: FormData
+): Promise<GestionConversationState> {
+  await requireOrganisateur();
+
+  const archivedAt =
+    formData.get("archiver") === "true" ? new Date().toISOString() : null;
+
+  const { error } = await supabaseServer
+    .from("conversations")
+    .update({ archived_at: archivedAt })
+    .eq("id", conversationId);
+
+  if (error) {
+    console.error(
+      "Échec de la mise à jour archived_at (basculerArchivage) :",
+      conversationId,
+      error.message
+    );
+    // 42703 = colonne inconnue côté Postgres : migration pas encore appliquée.
+    const migrationManquante =
+      error.code === "42703" || error.message.includes("archived_at");
+    return {
+      error: migrationManquante
+        ? ERREUR_MIGRATION_ARCHIVAGE
+        : ERREUR_GENERIQUE_GESTION,
+    };
+  }
+
+  revalidatePath(`/organisateurs/${conversationId}`);
+  revalidatePath("/organisateurs");
+
+  return { error: null };
+}
