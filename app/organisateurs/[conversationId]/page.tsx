@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { requireOrganisateur } from "@/lib/supabase-auth";
 import { supabaseServer } from "@/lib/supabase-server";
 import { marquerLu } from "../actions";
+import { AutoRefresh } from "./auto-refresh";
 import { ConversationThread, type Message } from "./conversation-thread";
 import { ReplyForm } from "./reply-form";
 
@@ -167,6 +168,7 @@ export default async function ConversationDetailPage({
           </p>
         )}
 
+        <AutoRefresh />
         <div className="mt-6 space-y-4">
           <ConversationThread
             messages={messages}
