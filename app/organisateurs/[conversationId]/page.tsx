@@ -96,6 +96,26 @@ export default async function ConversationDetailPage({
     erreurMessages = true;
   }
 
+  // last_student_read_at en requête séparée best-effort (même motif que côté
+  // élève) : tant que la migration 20260716100000 n'est pas appliquée, la
+  // colonne n'existe pas — on affiche alors ✓ au lieu de ✓✓, sans jamais
+  // empêcher l'ouverture de la conversation.
+  let lastStudentReadAt: string | null = null;
+
+  try {
+    const { data, error } = await supabaseServer
+      .from("conversations")
+      .select("last_student_read_at")
+      .eq("id", conversationId)
+      .maybeSingle();
+
+    if (!error && data) {
+      lastStudentReadAt = data.last_student_read_at;
+    }
+  } catch {
+    // Colonne (ou Supabase) indisponible : accusés silencieusement désactivés.
+  }
+
   // Ne marque comme lue que si le chargement des messages a réellement
   // réussi (AC #4) — en cas d'échec, on ne sait pas ce que l'Organisateur a
   // vu, donc on préfère laisser la Conversation "non traitée" plutôt que de
@@ -148,7 +168,10 @@ export default async function ConversationDetailPage({
         )}
 
         <div className="mt-6 space-y-4">
-          <ConversationThread messages={messages} />
+          <ConversationThread
+            messages={messages}
+            lastStudentReadAt={lastStudentReadAt}
+          />
           <ReplyForm conversationId={conversationId} />
         </div>
       </div>

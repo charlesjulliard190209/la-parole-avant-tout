@@ -150,3 +150,12 @@
     @apply font-sans;
   }
 }
+
+/* Full-screen chat: when the conversation view is on the page, lock the
+   whole page to the viewport height — the message feed scrolls internally
+   and the input stays pinned at the bottom (classic chat layout). Other
+   pages keep the normal document scroll. */
+body:has([data-chat-fullscreen]) {
+  height: 100dvh;
+  overflow: hidden;
+}

@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
@@ -224,6 +225,11 @@ export async function envoyerMessage(
     // signalDanger déjà calculé plus haut plutôt que de requêter is_priority
     // à nouveau, pour éviter toute course avec l'after() ci-dessus.
     after(() => notifierNouveauMessage(conversationId, signalDanger));
+
+    // Sans cette revalidation, le message envoyé ne s'affiche dans le fil
+    // qu'après un rechargement manuel : la page (Server Component) garde son
+    // rendu précédent alors que la base a bien reçu le message.
+    revalidatePath("/discussion-anonyme");
 
     return { error: null, accuse: getAccuseReceptionAleatoire() };
   } catch (error) {
