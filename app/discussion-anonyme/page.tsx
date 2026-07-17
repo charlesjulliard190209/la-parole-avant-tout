@@ -2,12 +2,14 @@ import { ArrowLeftIcon, BookmarkIcon, HourglassIcon, KeyRoundIcon } from "lucide
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { choisirModeEphemere } from "./actions";
+import { AutoRefresh } from "./auto-refresh";
 import { ConversationThread, type Message } from "./conversation-thread";
 import { MessageForm } from "./message-form";
 import { ModeChoiceSauvegarder } from "./mode-choice";
@@ -66,6 +68,7 @@ export default async function DiscussionAnonymePage({
   }
 
   let messages: Message[] = [];
+  let lastOrganizerReadAt: string | null = null;
 
   if (etapePrete && conversationId) {
     // Like findConversationBySessionToken (Task 1), a transient Supabase
@@ -75,12 +78,13 @@ export default async function DiscussionAnonymePage({
       id: string;
       is_ephemeral: boolean;
       session_token_hash: string | null;
+      last_organizer_read_at: string | null;
     } | null = null;
 
     try {
       const { data, error } = await supabaseServer
         .from("conversations")
-        .select("id, is_ephemeral, session_token_hash")
+        .select("id, is_ephemeral, session_token_hash, last_organizer_read_at")
         .eq("id", conversationId)
         .maybeSingle();
 
@@ -123,6 +127,65 @@ export default async function DiscussionAnonymePage({
     } catch {
       messages = [];
     }
+
+    // ✓✓ on the student's own messages = the Organisateurs have read them
+    // (same definition as "traitée" : created_at <= last_organizer_read_at).
+    lastOrganizerReadAt = conversation.last_organizer_read_at;
+
+    // last_student_read_at lives in its own best-effort query, NOT in the
+    // critical conversation select above: the migration adding it
+    // (20260716100000) may not be applied yet on an environment we don't
+    // control — a missing column must only disable the ✓✓ receipts, never
+    // redirect the student out of their conversation.
+    let lastStudentReadAt: string | null = null;
+    let lectureEleveDisponible = false;
+
+    try {
+      const { data, error } = await supabaseServer
+        .from("conversations")
+        .select("last_student_read_at")
+        .eq("id", conversationId)
+        .maybeSingle();
+
+      if (!error && data) {
+        lastStudentReadAt = data.last_student_read_at;
+        lectureEleveDisponible = true;
+      }
+    } catch {
+      // Column (or Supabase) unavailable : receipts silently off.
+    }
+
+    // Mirror of marquerLu() on the Organisateur side : displaying the thread
+    // means the student has read the replies. Only written when there is an
+    // organizer message newer than the current mark (one conditional write,
+    // not one per 5s poll), and never on a failed messages load (messages is
+    // [] then — fail-safe, same philosophy as the Organisateur page).
+    const dernierMessageOrganisateur = [...messages]
+      .reverse()
+      .find((message) => message.sender_type === "organisateur");
+
+    if (
+      lectureEleveDisponible &&
+      dernierMessageOrganisateur &&
+      (!lastStudentReadAt ||
+        Date.parse(lastStudentReadAt) <
+          Date.parse(dernierMessageOrganisateur.created_at))
+    ) {
+      after(async () => {
+        const { error } = await supabaseServer
+          .from("conversations")
+          .update({ last_student_read_at: new Date().toISOString() })
+          .eq("id", conversationId);
+
+        if (error) {
+          console.error(
+            "Échec de la mise à jour last_student_read_at :",
+            conversationId,
+            error.message
+          );
+        }
+      });
+    }
   }
 
   return (
@@ -149,6 +212,7 @@ export default async function DiscussionAnonymePage({
 
           {etapePrete && conversationId ? (
             <div className="mt-6 flex flex-col gap-4">
+              <AutoRefresh />
               <div>
                 <Button
                   asChild
@@ -162,7 +226,10 @@ export default async function DiscussionAnonymePage({
                   </Link>
                 </Button>
               </div>
-              <ConversationThread messages={messages} />
+              <ConversationThread
+                messages={messages}
+                lastOrganizerReadAt={lastOrganizerReadAt}
+              />
               <MessageForm conversationId={conversationId} />
             </div>
           ) : (

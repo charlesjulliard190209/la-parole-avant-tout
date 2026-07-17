@@ -9,7 +9,29 @@ export type Message = {
 // mêmes messages, labels inversés (point de vue Organisateur, pas Élève).
 // Dupliqué plutôt que partagé via un prop de labels — cohérent avec la
 // préférence déjà actée dans ce projet pour la duplication à cette échelle.
-export function ConversationThread({ messages }: { messages: Message[] }) {
+// Same WhatsApp-style receipt as the student side (duplicated on purpose,
+// see comment above): ✓ = stored, ✓✓ = the student has displayed the thread
+// since this reply was sent.
+function AccuseLecture({ lu }: { lu: boolean }) {
+  return (
+    <span
+      className="mt-1 block text-right text-[11px] leading-none text-zinc-500 dark:text-zinc-400"
+      title={lu ? "Lu" : "Reçu"}
+      aria-label={lu ? "Lu" : "Reçu"}
+    >
+      {lu ? "✓✓" : "✓"}
+    </span>
+  );
+}
+
+export function ConversationThread({
+  messages,
+  lastStudentReadAt,
+}: {
+  messages: Message[];
+  // ✓✓ threshold for the Organisateur's own replies (null = never read).
+  lastStudentReadAt: string | null;
+}) {
   if (messages.length === 0) {
     return null;
   }
@@ -32,6 +54,15 @@ export function ConversationThread({ messages }: { messages: Message[] }) {
               {estEleve ? "Élève" : "Toi"}
             </p>
             <p className="whitespace-pre-wrap">{message.body}</p>
+            {!estEleve && (
+              <AccuseLecture
+                lu={
+                  !!lastStudentReadAt &&
+                  Date.parse(message.created_at) <=
+                    Date.parse(lastStudentReadAt)
+                }
+              />
+            )}
           </div>
         );
       })}
