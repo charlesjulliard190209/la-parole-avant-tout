@@ -332,22 +332,31 @@ export default async function OrganisateursPage({
     erreurRecherche = recherche.erreurRecherche;
   }
 
+  // Layout plein écran (même principe que les pages de chat) : la carte est
+  // verrouillée à la hauteur du viewport via `data-chat-fullscreen`
+  // (globals.css). La zone haute (titre, recherche, onglets) reste fixe ; seule
+  // la liste défile en interne, et un onglet vide affiche son état vide centré
+  // au milieu de cette zone.
   return (
-    <main className="flex flex-1 flex-col items-center bg-background px-4 py-10 sm:py-16">
-      <div className="w-full max-w-xl rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
-        <div className="flex items-center justify-between">
-          <h1 className="font-heading text-2xl font-bold text-foreground">
-            Espace Organisateurs
-          </h1>
+    <main
+      data-chat-fullscreen
+      className="flex min-h-0 flex-1 flex-col items-center bg-background px-4 py-4 sm:py-6"
+    >
+      <div className="flex min-h-0 w-full max-w-xl flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        {/* Zone haute fixe */}
+        <div className="flex flex-col gap-4 border-b border-border p-4 sm:p-6">
+          <div className="flex items-center justify-between">
+            <h1 className="font-heading text-2xl font-bold text-foreground">
+              Espace Organisateurs
+            </h1>
 
-          <form action={seDeconnecter}>
-            <Button type="submit" variant="outline" size="sm">
-              Se déconnecter
-            </Button>
-          </form>
-        </div>
+            <form action={seDeconnecter}>
+              <Button type="submit" variant="outline" size="sm">
+                Se déconnecter
+              </Button>
+            </form>
+          </div>
 
-        <div className="mt-6 space-y-4">
           {erreurOuvertureConversation && (
             <p role="alert" className="text-sm font-medium text-destructive">
               Impossible d&apos;ouvrir cette conversation. Réessaie dans
@@ -376,9 +385,12 @@ export default async function OrganisateursPage({
               recherche, leur sélection n'a pas d'effet : la vue bascule sur les
               résultats de recherche. */}
           <ConversationTabs ongletActif={ongletActif} compteurs={compteurs} />
+        </div>
 
+        {/* Zone liste scrollable (plein écran) */}
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 sm:p-6">
           {rechercheActive ? (
-            <div className="space-y-3">
+            <div className="flex min-h-0 flex-1 flex-col gap-3">
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
                 Résultats de recherche sur toutes les conversations (onglet
                 ignoré).

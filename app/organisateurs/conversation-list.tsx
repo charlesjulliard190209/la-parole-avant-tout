@@ -1,4 +1,6 @@
+import { SearchX, ThumbsUp, type LucideIcon } from "lucide-react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 export type ConversationSummary = {
   id: string;
@@ -68,6 +70,24 @@ function BadgesConversation({
   );
 }
 
+// État vide centré (icône + message), occupant toute la hauteur disponible de
+// la zone scrollable (flex-1) pour se retrouver au milieu du conteneur plein
+// écran plutôt que collé en haut.
+function EmptyState({
+  icon: Icon,
+  children,
+}: {
+  icon: LucideIcon;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-3 py-12 text-center text-zinc-500 dark:text-zinc-400">
+      <Icon aria-hidden className="h-10 w-10 opacity-40" />
+      <p className="text-sm">{children}</p>
+    </div>
+  );
+}
+
 // Style de carte-lien réutilisé par la liste et par les résultats de
 // recherche (bordure rouge pour les prioritaires).
 function classesCarte(isPriority: boolean): string {
@@ -95,9 +115,7 @@ export function ConversationList({
     }
 
     return (
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
-        Aucune conversation dans cet onglet.
-      </p>
+      <EmptyState icon={ThumbsUp}>Aucune conversation dans cet onglet.</EmptyState>
     );
   }
 
@@ -139,9 +157,9 @@ export function ConversationSearchResults({
 
   if (resultats.length === 0) {
     return (
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <EmptyState icon={SearchX}>
         Aucun message ne correspond à «&nbsp;{terme}&nbsp;».
-      </p>
+      </EmptyState>
     );
   }
 
