@@ -218,6 +218,30 @@ export async function envoyerMessage(
       });
     }
 
+    // Réouverture automatique (admin v2, 2026-07-17) : si la conversation
+    // avait été archivée par un Organisateur, un nouveau message élève la
+    // remet active — un élève qui relance ne doit jamais rester invisible.
+    // Différée via after() et best-effort : l'écriture n'est jamais lue par
+    // l'appelant, et tant que la migration archived_at (20260717000000) n'est
+    // pas appliquée, son échec ne doit pas bloquer l'envoi. La condition
+    // `archived_at not null` n'écrit que sur une conversation réellement
+    // archivée (pas de write inutile sur le cas courant).
+    after(async () => {
+      const { error: reouvertureError } = await supabaseServer
+        .from("conversations")
+        .update({ archived_at: null })
+        .eq("id", conversationId)
+        .not("archived_at", "is", null);
+
+      if (reouvertureError) {
+        console.error(
+          "Échec de la réouverture automatique (archived_at) :",
+          conversationId,
+          reouvertureError.message
+        );
+      }
+    });
+
     // FR-7/FR-10 (Story 3.4) : notification Telegram différée via after(),
     // inconditionnelle (pas seulement sur signalDanger) — un seul mécanisme
     // notifie toujours les deux Organisateurs, prioritaire ou non (AD-7,

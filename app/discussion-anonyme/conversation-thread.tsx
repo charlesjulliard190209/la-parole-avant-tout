@@ -5,16 +5,15 @@ export type Message = {
   created_at: string;
 };
 
+import { formaterHorodatageMessage } from "@/lib/format-message-date";
+
 // WhatsApp-style receipt on the sender's own messages: ✓ = stored (it is in
 // the database if it renders here), ✓✓ = the other side has displayed the
-// thread since this message was sent.
+// thread since this message was sent. Inline (span) : affiché dans la ligne de
+// pied de bulle, à côté de l'horodatage.
 function AccuseLecture({ lu }: { lu: boolean }) {
   return (
-    <span
-      className="mt-1 block text-right text-[11px] leading-none opacity-70"
-      title={lu ? "Lu" : "Reçu"}
-      aria-label={lu ? "Lu" : "Reçu"}
-    >
+    <span title={lu ? "Lu" : "Reçu"} aria-label={lu ? "Lu" : "Reçu"}>
       {lu ? "✓✓" : "✓"}
     </span>
   );
@@ -68,15 +67,27 @@ export function ConversationThread({
               {estEleve ? "Toi" : "L'équipe"}
             </p>
             <p className="whitespace-pre-wrap">{message.body}</p>
-            {estEleve && (
-              <AccuseLecture
-                lu={
-                  !!lastOrganizerReadAt &&
-                  Date.parse(message.created_at) <=
-                    Date.parse(lastOrganizerReadAt)
-                }
-              />
-            )}
+
+            {/* Pied de bulle discret : horodatage (+ accusé de lecture pour
+                les messages de l'élève). Aligné du côté de la bulle. */}
+            <div
+              className={`mt-1 flex items-center gap-1.5 text-[11px] leading-none opacity-60 ${
+                estEleve ? "justify-end" : ""
+              }`}
+            >
+              <time dateTime={message.created_at}>
+                {formaterHorodatageMessage(message.created_at)}
+              </time>
+              {estEleve && (
+                <AccuseLecture
+                  lu={
+                    !!lastOrganizerReadAt &&
+                    Date.parse(message.created_at) <=
+                      Date.parse(lastOrganizerReadAt)
+                  }
+                />
+              )}
+            </div>
           </div>
         );
       })}
