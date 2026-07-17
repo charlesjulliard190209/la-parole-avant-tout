@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   Archive,
   Flag,
@@ -10,9 +9,11 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   LIBELLES_ONGLETS,
   ONGLETS,
+  normaliserOnglet,
   type OngletId,
 } from "@/lib/conversation-admin";
 
@@ -31,84 +32,68 @@ export function ConversationTabs({
   ongletActif: OngletId;
   compteurs: Record<OngletId, number>;
 }) {
+  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Construit l'URL d'un onglet en CONSERVANT les autres query params présents
-  // (en particulier ?q= : basculer d'onglet ne doit jamais effacer une
-  // recherche en cours).
-  function hrefOnglet(onglet: OngletId): string {
+  // Onglets pilotés par l'URL (le filtrage se fait côté serveur, pas via des
+  // TabsContent) : le composant Tabs est CONTRÔLÉ par `ongletActif` (lu depuis
+  // ?onglet=) et chaque changement navigue en conservant les autres query
+  // params — en particulier ?q= : basculer d'onglet ne doit pas effacer une
+  // recherche en cours.
+  function onOngletChange(valeur: string) {
+    const onglet = normaliserOnglet(valeur);
     const params = new URLSearchParams(searchParams.toString());
     params.set("onglet", onglet);
-    return `${pathname}?${params.toString()}`;
+    router.push(`${pathname}?${params.toString()}`);
   }
 
   return (
-    <nav aria-label="Filtrer les conversations">
-      {/* Pattern « pills qui se déplient » : sous sm, seul l'onglet actif
-          affiche icône + libellé + compteur ; les onglets inactifs se
-          réduisent à leur icône (avec un point si compteur > 0). À partir de
-          sm, les 4 onglets sont dépliés. */}
-      <ul className="flex flex-wrap gap-2">
+    <Tabs
+      value={ongletActif}
+      onValueChange={onOngletChange}
+      aria-label="Filtrer les conversations"
+    >
+      {/* TabsList shadcn = segmented control sur UNE ligne (triggers en flex-1,
+          largeurs égales). Sur mobile chaque onglet se réduit à icône +
+          compteur ; le libellé apparaît à partir de sm. */}
+      <TabsList>
         {ONGLETS.map((onglet) => {
           const Icone = ICONES[onglet];
-          const actif = onglet === ongletActif;
           const libelle = LIBELLES_ONGLETS[onglet];
           const compteur = compteurs[onglet];
 
           return (
-            <li key={onglet}>
-              <Link
-                href={hrefOnglet(onglet)}
-                aria-current={actif ? "page" : undefined}
-                className={`relative flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
-                  actif
-                    ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-50 dark:bg-zinc-50 dark:text-zinc-900"
-                    : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                }`}
+            <TabsTrigger
+              key={onglet}
+              value={onglet}
+              title={`${libelle} (${compteur})`}
+            >
+              <Icone aria-hidden />
+
+              {/* Libellé décoratif, visible seulement à partir de sm. */}
+              <span aria-hidden className="hidden sm:inline">
+                {libelle}
+              </span>
+
+              {/* Compteur décoratif, toujours visible (info utile même sur
+                  mobile : combien de conversations dans chaque onglet). */}
+              <span
+                aria-hidden
+                className="inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-foreground/10 px-1.5 text-xs font-semibold"
               >
-                <Icone aria-hidden className="h-4 w-4 shrink-0" />
+                {compteur}
+              </span>
 
-                {/* Libellé visible (décoratif) : toujours pour l'onglet actif,
-                    seulement à partir de sm pour les onglets inactifs. */}
-                <span aria-hidden className={actif ? undefined : "hidden sm:inline"}>
-                  {libelle}
-                </span>
-
-                {/* Compteur visible (décoratif), mêmes règles d'affichage que
-                    le libellé. */}
-                <span
-                  aria-hidden
-                  className={`inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 text-xs font-semibold ${
-                    actif
-                      ? "bg-white/20 text-white dark:bg-zinc-900/10 dark:text-zinc-900"
-                      : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                  } ${actif ? "" : "hidden sm:inline-flex"}`}
-                >
-                  {compteur}
-                </span>
-
-                {/* Point indicateur mobile : onglet inactif réduit à son icône
-                    mais avec au moins un élément — signale visuellement qu'il
-                    contient des conversations sans dérouler le compteur. */}
-                {!actif && compteur > 0 && (
-                  <span
-                    aria-hidden
-                    className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500 sm:hidden"
-                  />
-                )}
-
-                {/* Nom accessible complet, toujours présent dans l'arbre
-                    d'accessibilité même quand le texte est masqué visuellement
-                    (les spans visibles sont aria-hidden). */}
-                <span className="sr-only">
-                  {libelle} ({compteur})
-                </span>
-              </Link>
-            </li>
+              {/* Nom accessible complet, toujours présent même quand le libellé
+                  est masqué visuellement (les spans visibles sont aria-hidden). */}
+              <span className="sr-only">
+                {libelle} ({compteur})
+              </span>
+            </TabsTrigger>
           );
         })}
-      </ul>
-    </nav>
+      </TabsList>
+    </Tabs>
   );
 }
