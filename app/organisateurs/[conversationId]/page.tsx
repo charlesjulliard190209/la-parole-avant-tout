@@ -2,8 +2,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireOrganisateur } from "@/lib/supabase-auth";
 import { supabaseServer } from "@/lib/supabase-server";
+import { estArchivee } from "@/lib/conversation-archive";
 import { marquerLu } from "../actions";
 import { AutoRefresh } from "./auto-refresh";
+import { ConversationActions } from "./conversation-actions";
 import { ConversationThread, type Message } from "./conversation-thread";
 import { ReplyForm } from "./reply-form";
 
@@ -117,6 +119,28 @@ export default async function ConversationDetailPage({
     // Colonne (ou Supabase) indisponible : accusés silencieusement désactivés.
   }
 
+  // archived_at en requête séparée best-effort (même motif que
+  // last_student_read_at ci-dessus) : tant que la migration 20260717000000
+  // n'est pas appliquée, la colonne n'existe pas — on considère alors la
+  // conversation comme active (bouton "Archiver"), sans jamais empêcher son
+  // ouverture. NE PAS l'ajouter à la requête principale select() sinon la page
+  // planterait sans la migration.
+  let archivedAt: string | null = null;
+
+  try {
+    const { data, error } = await supabaseServer
+      .from("conversations")
+      .select("archived_at")
+      .eq("id", conversationId)
+      .maybeSingle();
+
+    if (!error && data) {
+      archivedAt = data.archived_at;
+    }
+  } catch {
+    // Colonne (ou Supabase) indisponible : conversation traitée comme active.
+  }
+
   // Ne marque comme lue que si le chargement des messages a réellement
   // réussi (AC #4) — en cas d'échec, on ne sait pas ce que l'Organisateur a
   // vu, donc on préfère laisser la Conversation "non traitée" plutôt que de
@@ -157,6 +181,12 @@ export default async function ConversationDetailPage({
             )}
           </div>
         )}
+
+        <ConversationActions
+          conversationId={conversationId}
+          isPriority={conversation.is_priority}
+          isArchived={estArchivee(archivedAt)}
+        />
 
         {erreurMessages && (
           <p
